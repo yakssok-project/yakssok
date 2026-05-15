@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}약쏙{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="page-wrap">
+        <header class="site-header">
+            <h1 class="site-logo">약쏙</h1>
+            {% block header_sub %}{% endblock %}
+        </header>
+        <main class="main-content">
+            {% if messages %}
+            <ul class="message-list" role="alert">
+                {% for message in messages %}
+                <li class="message message-{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

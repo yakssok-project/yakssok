@@ -1,0 +1,277 @@
+/* 약쏙 — 회원가입/로그인 (모바일 우선, 노인 친화 UI) */
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    font-size: 20px;
+    line-height: 1.6;
+    color: #1a1a1a;
+    background-color: #f5f7fa;
+}
+
+.page-wrap {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 1rem 1.25rem 2rem;
+}
+
+.site-header {
+    text-align: center;
+    padding: 1.5rem 0 1rem;
+}
+
+.site-logo {
+    margin: 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2563eb;
+    letter-spacing: -0.02em;
+}
+
+.header-desc {
+    margin: 0.5rem 0 0;
+    font-size: 1.125rem;
+    color: #4b5563;
+}
+
+.main-content {
+    padding-top: 0.5rem;
+}
+
+.auth-card,
+.home-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.75rem 1.5rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.auth-title {
+    margin: 0 0 1.25rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.progress-bar {
+    height: 10px;
+    background: #e5e7eb;
+    border-radius: 999px;
+    margin-bottom: 1.5rem;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #2563eb;
+    border-radius: 999px;
+    transition: width 0.3s ease;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-label {
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="password"],
+.auth-form input[type="tel"],
+.auth-form input[type="date"] {
+    width: 100%;
+    padding: 1rem 1.125rem;
+    font-size: 1.25rem;
+    border: 2px solid #d1d5db;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+}
+
+.form-group.has-error input {
+    border-color: #dc2626;
+}
+
+/* 체크박스·라디오 — 터치 영역 확대 */
+.auth-form ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.auth-form ul li {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1.125rem;
+    min-height: 3.25rem;
+}
+
+.auth-form ul li label {
+    flex: 1;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.auth-form input[type="checkbox"],
+.auth-form input[type="radio"] {
+    width: 1.5rem;
+    height: 1.5rem;
+    flex-shrink: 0;
+    accent-color: #2563eb;
+}
+
+.form-hint {
+    margin: 0;
+    font-size: 1rem;
+    color: #6b7280;
+}
+
+.field-error {
+    margin: 0;
+    font-size: 1.0625rem;
+    color: #dc2626;
+    font-weight: 600;
+}
+
+.error-box {
+    background: #fef2f2;
+    border: 2px solid #fecaca;
+    border-radius: 12px;
+    padding: 1rem 1.125rem;
+    margin-bottom: 1.25rem;
+}
+
+.error-box p {
+    margin: 0;
+    font-size: 1.125rem;
+    color: #b91c1c;
+    font-weight: 600;
+}
+
+.form-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 3.5rem;
+    padding: 1rem 1.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: #fff;
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+    background: #1d4ed8;
+}
+
+.btn-secondary {
+    background: #e5e7eb;
+    color: #1f2937;
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+    background: #d1d5db;
+}
+
+.btn-full {
+    width: 100%;
+}
+
+.auth-link {
+    margin: 1.5rem 0 0;
+    text-align: center;
+    font-size: 1.125rem;
+}
+
+.auth-link a {
+    color: #2563eb;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.home-message {
+    font-size: 1.25rem;
+    text-align: center;
+    margin: 1rem 0;
+    color: #374151;
+}
+
+.logout-form {
+    margin-top: 2rem;
+}
+
+.message-list {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1rem;
+}
+
+.message {
+    padding: 1rem;
+    border-radius: 12px;
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+.message-error {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+@media (min-width: 481px) {
+    body {
+        font-size: 22px;
+    }
+
+    .site-logo {
+        font-size: 2.25rem;
+    }
+}
