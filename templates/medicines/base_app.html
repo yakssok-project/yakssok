@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}약쏙{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'medicines/css/common.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="app-page {% block body_class %}{% endblock %}">
+    <header class="app-header">
+        {% block header %}
+        <a href="{% block header_back_url %}{% url 'home' %}{% endblock %}" class="header-back" aria-label="뒤로가기">‹</a>
+        <h1 class="app-header-title">{% block header_title %}약쏙{% endblock %}</h1>
+        <span class="header-spacer" aria-hidden="true"></span>
+        {% endblock %}
+    </header>
+
+    <main class="app-main">
+        {% block content %}{% endblock %}
+    </main>
+
+    {% include 'medicines/includes/bottom_nav.html' %}
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,22 @@
+<nav class="bottom-nav" aria-label="메인 메뉴">
+    <a href="{% url 'home' %}" class="nav-item{% if nav_active == 'home' %} nav-item-active{% endif %}">
+        <span class="nav-icon nav-icon-home" aria-hidden="true"></span>
+        <span class="nav-label">홈</span>
+    </a>
+    <a href="{% url 'medicine_list' %}" class="nav-item{% if nav_active == 'medicines' %} nav-item-active{% endif %}">
+        <span class="nav-icon nav-icon-medicine" aria-hidden="true"></span>
+        <span class="nav-label">내 약</span>
+    </a>
+    <a href="#" class="nav-item nav-item-disabled" aria-disabled="true">
+        <span class="nav-icon nav-icon-scan" aria-hidden="true"></span>
+        <span class="nav-label">스캔</span>
+    </a>
+    <a href="#" class="nav-item nav-item-disabled" aria-disabled="true">
+        <span class="nav-icon nav-icon-pharmacy" aria-hidden="true"></span>
+        <span class="nav-label">약국</span>
+    </a>
+    <a href="#" class="nav-item nav-item-disabled" aria-disabled="true">
+        <span class="nav-icon nav-icon-my" aria-hidden="true"></span>
+        <span class="nav-label">마이</span>
+    </a>
+</nav>

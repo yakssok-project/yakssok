@@ -1,0 +1,84 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>홈 - 약쏙</title>
+    <link rel="stylesheet" href="{% static 'medicines/css/home.css' %}">
+</head>
+<body class="home-page">
+    <header class="home-header">
+        <h1 class="home-logo">약쏙</h1>
+        <button type="button" class="icon-btn notification-btn" aria-label="알림">
+            <span class="icon-bell" aria-hidden="true"></span>
+        </button>
+    </header>
+
+    <main class="home-main">
+        <section class="greeting-section">
+            <p class="greeting-label">안녕하세요</p>
+            <h2 class="greeting-name">{{ user.name }}님</h2>
+        </section>
+
+        {% if has_medicines %}
+        <p class="medicine-summary">
+            먹어야 할 약은 <strong>{{ medicine_count }}개</strong> 입니다.
+        </p>
+
+        <ul class="medicine-card-list" aria-label="복용 예정 약 목록">
+            {% for item in medicine_items %}
+            <li class="medicine-card">
+                <span class="medicine-card-badge">다음 복용</span>
+                <p class="medicine-card-next">{{ item.next_intake_label }}</p>
+                <h3 class="medicine-card-name">{{ item.medicine.medicine_name }}</h3>
+                <dl class="medicine-card-meta">
+                    <div class="meta-row">
+                        <dt>복용 시간</dt>
+                        <dd>{{ item.intake_times_display }}</dd>
+                    </div>
+                    <div class="meta-row">
+                        <dt>복용 횟수</dt>
+                        <dd>{{ item.medicine.frequency }}</dd>
+                    </div>
+                </dl>
+                {% if item.medicine.alarm_enabled %}
+                <span class="alarm-tag">알림 켜짐</span>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="empty-message" role="status">현재 등록된 약이 없습니다.</p>
+        {% endif %}
+
+        <a href="#" class="promo-banner" aria-label="내 약, 얼마나 남았을까?">
+            <span class="promo-banner-text">내 약, 얼마나 남았을까?</span>
+            <span class="promo-banner-arrow" aria-hidden="true">›</span>
+        </a>
+    </main>
+
+    <nav class="bottom-nav" aria-label="메인 메뉴">
+        <a href="{% url 'home' %}" class="nav-item nav-item-active" aria-current="page">
+            <span class="nav-icon nav-icon-home" aria-hidden="true"></span>
+            <span class="nav-label">홈</span>
+        </a>
+        <a href="{% url 'medicine_list' %}" class="nav-item">
+            <span class="nav-icon nav-icon-medicine" aria-hidden="true"></span>
+            <span class="nav-label">내 약</span>
+        </a>
+        <a href="#" class="nav-item nav-item-disabled" aria-disabled="true">
+            <span class="nav-icon nav-icon-scan" aria-hidden="true"></span>
+            <span class="nav-label">스캔</span>
+        </a>
+        <a href="#" class="nav-item nav-item-disabled" aria-disabled="true">
+            <span class="nav-icon nav-icon-pharmacy" aria-hidden="true"></span>
+            <span class="nav-label">약국</span>
+        </a>
+        <a href="#" class="nav-item nav-item-disabled" aria-disabled="true">
+            <span class="nav-icon nav-icon-my" aria-hidden="true"></span>
+            <span class="nav-label">마이</span>
+        </a>
+    </nav>
+</body>
+</html>

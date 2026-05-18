@@ -1,0 +1,94 @@
+{% extends 'medicines/base_app.html' %}
+{% load static %}
+
+{% block title %}내 약 - 약쏙{% endblock %}
+{% block body_class %}medicine-list-page{% endblock %}
+{% block header_back_url %}{% url 'home' %}{% endblock %}
+{% block header_title %}내 약{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'medicines/css/medicines.css' %}">
+{% endblock %}
+
+{% block content %}
+<section class="list-toolbar">
+    <label for="sort-select" class="sort-label">정렬</label>
+    <select id="sort-select" class="sort-select" aria-label="약 목록 정렬">
+        <option value="{{ sort_manufactured }}" {% if sort_key == sort_manufactured %}selected{% endif %}>제조일순</option>
+        <option value="{{ sort_remaining }}" {% if sort_key == sort_remaining %}selected{% endif %}>남은 날 순</option>
+    </select>
+</section>
+
+{% if has_medicines %}
+<ul class="my-medicine-list" aria-label="복용 중인 약 목록">
+    {% for medicine in medicines %}
+    <li>
+        <a href="{% url 'medicine_detail' medicine.pk %}" class="my-medicine-card">
+            <div class="medicine-thumb-wrap">
+                {% if medicine.image_static_path %}
+                <img src="{% static medicine.image_static_path %}" alt="" class="medicine-thumb">
+                {% else %}
+                <div class="medicine-thumb-placeholder" aria-hidden="true"></div>
+                {% endif %}
+            </div>
+            <div class="medicine-card-body">
+                <h2 class="medicine-card-title">{{ medicine.medicine_name }}</h2>
+                <p class="medicine-card-date">
+                    제조일자
+                    {% if medicine.manufactured_date %}
+                    {{ medicine.manufactured_date|date:'Y.m.d' }}
+                    {% else %}
+                    -
+                    {% endif %}
+                </p>
+                <p class="medicine-card-qty">{{ medicine.quantity_display }}</p>
+            </div>
+            <span class="card-arrow" aria-hidden="true">›</span>
+        </a>
+    </li>
+    {% endfor %}
+</ul>
+{% else %}
+<p class="empty-message" role="status">현재 등록된 약이 없습니다.</p>
+{% endif %}
+
+{% if has_ddi_warning %}
+{{ ddi_warnings_json|json_script:"ddi-warnings-data" }}
+<div class="modal-overlay" id="ddi-modal-overlay" hidden>
+    <div class="modal-dialog ddi-modal" role="dialog" aria-modal="true" aria-labelledby="ddi-modal-title">
+        <h2 id="ddi-modal-title" class="modal-title">같은 성분의 약이 있어요</h2>
+        <p class="modal-desc" id="ddi-short-notice">
+            이 약들은 같은 성분이 들어있어 함께 복용하면 몸에 무리가 갈 수 있어요.
+            복용 전에 한 번 더 확인해주세요.
+        </p>
+        <div class="ddi-medicine-pair" id="ddi-medicine-pair"></div>
+        <button type="button" class="link-btn" id="ddi-learn-more">더 알아보기</button>
+        <div class="modal-actions">
+            <a href="tel:1339" class="btn btn-outline" id="ddi-consult-btn">약사에게 문의하기</a>
+            <button type="button" class="btn btn-primary" id="ddi-confirm-btn">확인</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="ddi-detail-overlay" hidden>
+    <div class="modal-dialog ddi-detail-modal" role="dialog" aria-modal="true" aria-labelledby="ddi-detail-title">
+        <h2 id="ddi-detail-title" class="modal-title">금기 사유</h2>
+        <p class="ddi-reason-text" id="ddi-reason-text"></p>
+        <button type="button" class="btn btn-primary btn-full" id="ddi-detail-close">확인</button>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% if has_ddi_warning %}
+<script src="{% static 'medicines/js/medicines.js' %}"></script>
+{% endif %}
+<script>
+document.getElementById('sort-select')?.addEventListener('change', function () {
+    const url = new URL(window.location.href);
+    url.searchParams.set('sort', this.value);
+    window.location.href = url.toString();
+});
+</script>
+{% endblock %}

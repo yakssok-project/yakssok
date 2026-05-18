@@ -1,0 +1,64 @@
+{% extends 'medicines/base_app.html' %}
+{% load static %}
+
+{% block title %}{{ medicine.medicine_name }} - 약쏙{% endblock %}
+{% block body_class %}medicine-detail-page{% endblock %}
+{% block header_back_url %}{% url 'medicine_list' %}{% endblock %}
+{% block header_title %}약 상세{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'medicines/css/medicines.css' %}">
+{% endblock %}
+
+{% block content %}
+<article class="detail-card">
+    <h2 class="detail-name">{{ medicine.medicine_name }}</h2>
+    <p class="detail-manufacturer">
+        제조사
+        <span>{% if medicine.manufacturer %}{{ medicine.manufacturer }}{% else %}-{% endif %}</span>
+    </p>
+
+    <div class="detail-image-wrap">
+        <img
+            src="{% static medicine.image_static_path %}"
+            alt="{{ medicine.medicine_name }} 약 이미지"
+            class="detail-image"
+        >
+    </div>
+
+    <dl class="detail-info-list">
+        <div class="detail-info-row">
+            <dt>성상</dt>
+            <dd>{% if medicine.appearance %}{{ medicine.appearance }}{% else %}-{% endif %}</dd>
+        </div>
+        <div class="detail-info-row">
+            <dt>식별표시 (앞)</dt>
+            <dd>{% if medicine.mark_front %}{{ medicine.mark_front }}{% else %}-{% endif %}</dd>
+        </div>
+        <div class="detail-info-row">
+            <dt>식별표시 (뒤)</dt>
+            <dd>{% if medicine.mark_back %}{{ medicine.mark_back }}{% else %}-{% endif %}</dd>
+        </div>
+        <div class="detail-info-row">
+            <dt>색깔</dt>
+            <dd>{% if medicine.color %}{{ medicine.color }}{% else %}-{% endif %}</dd>
+        </div>
+        <div class="detail-info-row">
+            <dt>성분명</dt>
+            <dd>{% if medicine.ingredient_name %}{{ medicine.ingredient_name }}{% else %}-{% endif %}</dd>
+        </div>
+        <div class="detail-info-row">
+            <dt>남은 복용량</dt>
+            <dd>{{ medicine.quantity_display }}</dd>
+        </div>
+        <div class="detail-info-row">
+            <dt>복용 횟수</dt>
+            <dd>{{ medicine.frequency }}</dd>
+        </div>
+        <div class="detail-info-row">
+            <dt>복용 시간</dt>
+            <dd>{{ medicine.intake_time }}</dd>
+        </div>
+    </dl>
+</article>
+{% endblock %}

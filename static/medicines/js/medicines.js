@@ -1,0 +1,148 @@
+/**
+ * DDI 위험 약 조합 경고 팝업 (medicine_list.html)
+ * - 위험한 약 2개: 이름 + 이미지 + 간단 주의 문구
+ * - 더 알아보기: 금기 사유(contraindication_reason) 상세
+ * - 약사에게 문의하기: 전화 연결
+ * - 확인: 다음 경고 표시 또는 팝업 종료
+ */
+(function () {
+    'use strict';
+
+    const dataEl = document.getElementById('ddi-warnings-data');
+    if (!dataEl) return;
+
+    let warnings;
+    try {
+        warnings = JSON.parse(dataEl.textContent);
+    } catch (e) {
+        console.error('DDI 경고 데이터를 읽을 수 없습니다.', e);
+        return;
+    }
+
+    if (!Array.isArray(warnings) || warnings.length === 0) return;
+
+    const overlay = document.getElementById('ddi-modal-overlay');
+    const pairEl = document.getElementById('ddi-medicine-pair');
+    const learnMoreBtn = document.getElementById('ddi-learn-more');
+    const confirmBtn = document.getElementById('ddi-confirm-btn');
+    const detailOverlay = document.getElementById('ddi-detail-overlay');
+    const reasonEl = document.getElementById('ddi-reason-text');
+    const detailCloseBtn = document.getElementById('ddi-detail-close');
+
+    if (!overlay || !pairEl || !learnMoreBtn || !confirmBtn || !detailOverlay || !reasonEl || !detailCloseBtn) {
+        console.error('DDI 팝업에 필요한 DOM 요소가 없습니다.');
+        return;
+    }
+
+    let currentIndex = 0;
+    let bodyScrollLocked = false;
+
+    function lockBodyScroll(lock) {
+        if (lock && !bodyScrollLocked) {
+            document.body.style.overflow = 'hidden';
+            bodyScrollLocked = true;
+        } else if (!lock && bodyScrollLocked) {
+            document.body.style.overflow = '';
+            bodyScrollLocked = false;
+        }
+    }
+
+    function renderPair(warning) {
+        const m1 = warning.medicine_1 || {};
+        const m2 = warning.medicine_2 || {};
+
+        pairEl.replaceChildren();
+
+        function appendMedItem(container, med) {
+            const wrap = document.createElement('div');
+            wrap.className = 'ddi-med-item';
+            const img = document.createElement('img');
+            img.alt = med.name || '약';
+            if (med.image) {
+                img.src = String(med.image);
+            }
+            const caption = document.createElement('p');
+            caption.textContent = med.name || '약';
+            wrap.appendChild(img);
+            wrap.appendChild(caption);
+            container.appendChild(wrap);
+        }
+
+        appendMedItem(pairEl, m1);
+
+        const plus = document.createElement('span');
+        plus.className = 'ddi-med-plus';
+        plus.setAttribute('aria-hidden', 'true');
+        plus.textContent = '+';
+        pairEl.appendChild(plus);
+
+        appendMedItem(pairEl, m2);
+
+        learnMoreBtn.dataset.reason = warning.reason != null ? String(warning.reason) : '';
+    }
+
+    function showMainModal(show) {
+        overlay.hidden = !show;
+        lockBodyScroll(show && detailOverlay.hidden);
+        if (show) {
+            confirmBtn.focus();
+        }
+    }
+
+    function showDetailModal(show) {
+        detailOverlay.hidden = !show;
+        lockBodyScroll(show || !overlay.hidden);
+        if (show) {
+            detailCloseBtn.focus();
+        } else if (!overlay.hidden) {
+            confirmBtn.focus();
+        }
+    }
+
+    function showWarning(index) {
+        if (index >= warnings.length) {
+            showMainModal(false);
+            lockBodyScroll(false);
+            return;
+        }
+        currentIndex = index;
+        renderPair(warnings[index]);
+        showMainModal(true);
+    }
+
+    learnMoreBtn.addEventListener('click', function () {
+        reasonEl.textContent = learnMoreBtn.dataset.reason || '상세 설명이 없습니다.';
+        showDetailModal(true);
+    });
+
+    detailCloseBtn.addEventListener('click', function () {
+        showDetailModal(false);
+    });
+
+    confirmBtn.addEventListener('click', function () {
+        showWarning(currentIndex + 1);
+    });
+
+    detailOverlay.addEventListener('click', function (e) {
+        if (e.target === detailOverlay) {
+            showDetailModal(false);
+        }
+    });
+
+    // 배경 클릭 시에는 닫지 않음(실수로 건너뛰기 방지). 확인 버튼으로만 진행.
+
+    document.addEventListener('keydown', function onKey(e) {
+        if (e.key !== 'Escape') return;
+        if (!detailOverlay.hidden) {
+            showDetailModal(false);
+            e.preventDefault();
+            return;
+        }
+        if (!overlay.hidden) {
+            showWarning(currentIndex + 1);
+            e.preventDefault();
+        }
+    });
+
+    showWarning(0);
+})();
