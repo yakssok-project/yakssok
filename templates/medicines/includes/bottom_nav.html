@@ -11,7 +11,7 @@
         <span class="nav-icon nav-icon-scan" aria-hidden="true"></span>
         <span class="nav-label">스캔</span>
     </a>
-    <a href="#" class="nav-item nav-item-disabled" aria-disabled="true">
+    <a href="{% url 'pharmacy_map' %}" class="nav-item{% if nav_active == 'pharmacy' %} nav-item-active{% endif %}">
         <span class="nav-icon nav-icon-pharmacy" aria-hidden="true"></span>
         <span class="nav-label">약국</span>
     </a>
