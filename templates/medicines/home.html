@@ -1,7 +1,13 @@
-{% extends 'medicines/base_app.html' %} {% load static %} {% block title %}홈 -
-약쏙{% endblock %} {% block extra_css %}
+{% extends 'medicines/base_app.html' %}
+{% load static %}
+
+{% block title %}홈 - 약쏙{% endblock %}
+
+{% block extra_css %}
 <link rel="stylesheet" href="{% static 'medicines/css/home.css' %}" />
-{% endblock %} {% block header %}
+{% endblock %}
+
+{% block header %}
 <div class="home-topbar">
   <div class="home-brand">
     <img
@@ -9,7 +15,6 @@
       alt="약쏙"
       class="home-logo-img"
     />
-
     <span class="home-logo-text">약쏙</span>
   </div>
 
@@ -17,7 +22,9 @@
     <i data-lucide="bell"></i>
   </button>
 </div>
-{% endblock %} {% block content %}
+{% endblock %}
+
+{% block content %}
 <section class="home-today">
   <div class="home-title-row">
     <h2 class="home-title">
@@ -29,68 +36,34 @@
   </div>
 
   {% if has_medicines %}
-  <div class="today-card-scroll">
-    {% for item in medicine_items %}
-    <article class="today-medicine-card">
-      <p class="today-time">오전 09:00 | 식후</p>
+    <div class="today-card-scroll">
+      {% for item in medicine_items %}
+      <article class="today-medicine-card">
+        <p class="today-time">오전 09:00 | 식후</p>
 
-      <div class="today-medicine-info">
-        <div class="today-thumb"></div>
+        <div class="today-medicine-info">
+          <div class="today-thumb"></div>
 
-        <div class="today-text">
-          <span class="today-badge">처방약</span>
-          <strong>{{ item.medicine.medicine_name }}</strong>
+          <div class="today-text">
+            <span class="today-badge">처방약</span>
+            <strong>{{ item.medicine.medicine_name }}</strong>
+          </div>
         </div>
-      </div>
 
-      <button type="button" class="today-check-btn">
-        <span class="today-check-icon"></span>
-        <span>복용 후 여기를 눌러주세요</span>
-      </button>
-    </article>
-    {% endfor %}
-  </div>
+        <button type="button" class="today-check-btn">
+          <span class="today-check-icon"></span>
+          <span>복용 후 여기를 눌러주세요</span>
+        </button>
+      </article>
+      {% endfor %}
+    </div>
+
+    <button type="button" class="all-taken-btn">모두 먹었어요</button>
   {% else %}
-  <div class="today-card-scroll">
-    <article class="today-medicine-card">
-      <p class="today-time">오전 09:00 | 식후</p>
-
-      <div class="today-medicine-info">
-        <div class="today-thumb"></div>
-
-        <div class="today-text">
-          <span class="today-badge">처방약</span>
-          <strong>어쩌고 저쩌고 약</strong>
-        </div>
-      </div>
-
-      <button type="button" class="today-check-btn">
-        <span class="today-check-icon"></span>
-        <span>복용 후 여기를 눌러주세요</span>
-      </button>
-    </article>
-
-    <article class="today-medicine-card">
-      <p class="today-time">오전 09:00 | 식후</p>
-
-      <div class="today-medicine-info">
-        <div class="today-thumb"></div>
-
-        <div class="today-text">
-          <span class="today-badge">처방약</span>
-          <strong>어쩌고 저쩌고 약</strong>
-        </div>
-      </div>
-
-      <button type="button" class="today-check-btn">
-        <span class="today-check-icon"></span>
-        <span>복용 후 여기를 눌러주세요</span>
-      </button>
-    </article>
-  </div>
+    <div class="empty-message">
+      현재 등록된 약이 없습니다.
+    </div>
   {% endif %}
-
-  <button type="button" class="all-taken-btn">모두 먹었어요</button>
 </section>
 
 <section class="home-banner-section">
@@ -138,7 +111,9 @@
     <span></span>
   </div>
 </section>
-{% endblock %} {% block extra_js %}
+{% endblock %}
+
+{% block extra_js %}
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     const bannerScroll = document.querySelector(".banner-scroll");
@@ -148,7 +123,7 @@
 
     bannerScroll.addEventListener("scroll", function () {
       const index = Math.round(
-        bannerScroll.scrollLeft / bannerScroll.clientWidth,
+        bannerScroll.scrollLeft / bannerScroll.clientWidth
       );
 
       dots.forEach(function (dot, i) {

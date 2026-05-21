@@ -1,38 +1,26 @@
 <nav class="bottom-nav" aria-label="메인 메뉴">
-  <a
-    href="{% url 'home' %}"
-    class="nav-item{% if nav_active == 'home' %} nav-item-active{% endif %}"
-  >
+  <a href="{% url 'home' %}" class="nav-item{% if nav_active == 'home' %} nav-item-active{% endif %}">
     <i data-lucide="house" class="nav-lucide"></i>
     <span class="nav-label">홈</span>
   </a>
 
-  <a
-    href="{% url 'medicine_list' %}"
-    class="nav-item{% if nav_active == 'medicines' %} nav-item-active{% endif %}"
-  >
+  <a href="{% url 'medicine_list' %}" class="nav-item{% if nav_active == 'medicines' %} nav-item-active{% endif %}">
     <i data-lucide="clipboard-list" class="nav-lucide"></i>
     <span class="nav-label">약 목록</span>
   </a>
 
-  <a
-    href="{% url 'prescription_upload' %}"
-    class="nav-item nav-item-center{% if nav_active == 'scan' %} nav-item-active{% endif %}"
-  >
+  <button type="button" class="nav-item nav-item-center nav-add-button" id="openAddMedicineModal">
     <span class="nav-plus-circle">
       <i data-lucide="plus" class="nav-plus-icon"></i>
     </span>
-  </a>
+  </button>
 
   <a href="#" class="nav-item nav-item-disabled">
     <i data-lucide="pill" class="nav-lucide"></i>
     <span class="nav-label">복약 관리</span>
   </a>
 
-  <a
-    href="{% url 'pharmacy_map' %}"
-    class="nav-item{% if nav_active == 'pharmacy' %} nav-item-active{% endif %}"
-  >
+  <a href="{% url 'pharmacy_map' %}" class="nav-item{% if nav_active == 'pharmacy' %} nav-item-active{% endif %}">
     <i data-lucide="cross" class="nav-lucide"></i>
     <span class="nav-label">약국 찾기</span>
   </a>

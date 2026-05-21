@@ -1,14 +1,100 @@
-<h2>약물 정보를 확인할게요</h2>
+{% extends 'medicines/base_app.html' %}
+{% load static %}
 
-{% for med in medicines %}
-<div class="medicine-card">
-  <strong>{{ med.name }}</strong>
-  <p>{{ med.raw_text }}</p>
-  <p>신뢰도: {{ med.confidence }}</p>
+{% block title %}약 추가하기 - 약쏙{% endblock %}
+{% block header_title %}약 추가하기{% endblock %}
 
-  <button>삭제하기</button>
-  <button>수정하기</button>
-</div>
-{% endfor %}
+{% block content %}
+<section class="ocr-result-page">
+  <div class="preview-steps">
+    <span></span>
+    <span></span>
+    <span class="active"></span>
+    <span></span>
+    <span></span>
+  </div>
 
-<button>약 추가하기</button>
+  <h2 class="ocr-result-title">약물 정보를 확인할게요</h2>
+
+  {% if error %}
+    <p class="empty-message">{{ error }}</p>
+  {% endif %}
+
+  {% if medicines %}
+    {% for med in medicines %}
+    <article class="ocr-medicine-card">
+      <div class="ocr-medicine-thumb"></div>
+
+      <div class="ocr-medicine-info">
+        <strong>{{ med.name }}</strong>
+
+        <p>
+          하루에
+          <span>
+            {{ med.frequency|default:"?" }}번
+          </span>,
+          <span>
+            {{ med.duration|default:"?" }}일
+          </span>
+          동안
+        </p>
+      </div>
+
+      <div class="ocr-medicine-actions">
+
+        <button type="button" class="ocr-delete-btn">
+          삭제하기
+        </button>
+
+        <a
+          href="{% url 'medicine_edit_temp' forloop.counter0 %}"
+          class="ocr-edit-link"
+        >
+          수정하기
+        </a>
+
+      </div>
+    </article>
+    {% endfor %}
+  {% else %}
+    <p class="empty-message">인식된 약물이 없습니다.</p>
+  {% endif %}
+
+  <form method="post" action="{% url 'prescription_save' %}" id="medicineSaveForm">
+    {% csrf_token %}
+    <button type="submit" class="ocr-add-btn">
+      약 추가하기
+    </button>
+  </form>
+
+  <div class="save-loading-overlay" id="saveLoadingOverlay" hidden>
+    <div class="save-loading-content">
+      <div class="scan-logo"></div>
+      <p id="saveLoadingText">
+        문제가 될 수 있는 조합이 있는지<br />
+        살펴보고 있어요
+      </p>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("medicineSaveForm");
+    const overlay = document.getElementById("saveLoadingOverlay");
+    const text = document.getElementById("saveLoadingText");
+
+    if (form && overlay) {
+      form.addEventListener("submit", function () {
+        overlay.hidden = false;
+
+        setTimeout(function () {
+          text.innerHTML = "저장되었어요";
+        }, 700);
+      });
+    }
+  });
+</script>
+{% endblock %}

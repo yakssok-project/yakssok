@@ -21,9 +21,14 @@
   box-sizing: border-box;
 }
 
+html,
+body {
+  overflow: hidden;
+}
+
 body.app-page {
   margin: 0;
-  min-height: 100vh;
+  height: 100vh;
   background: #a9a9a9;
   font-family: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
   font-size: var(--font-base);
@@ -36,7 +41,8 @@ body.app-page {
 .app-shell {
   position: relative;
   width: 390px;
-  min-height: 844px;
+  height: 844px;
+  max-height: 844px;
   background: var(--color-bg);
   overflow: hidden;
 }
@@ -76,8 +82,10 @@ body.app-page {
 
 .app-main {
   width: 100%;
+  height: calc(844px - var(--header-height) - var(--nav-height));
   margin: 0;
-  padding: 1rem 1.25rem calc(var(--nav-height) + 1.5rem);
+  padding: 1rem 1.25rem;
+  overflow: hidden;
 }
 
 .empty-message {
@@ -215,4 +223,550 @@ body.app-page {
 
 .btn-full {
   width: 100%;
+}
+
+.nav-add-button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* 약 추가 모달 */
+.add-medicine-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.62);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 1.25rem 2rem;
+}
+
+.add-medicine-overlay[hidden] {
+  display: none !important;
+}
+
+.add-medicine-modal {
+  width: 100%;
+  padding-bottom: 1.5rem;
+}
+
+.add-medicine-title {
+  margin: 0 0 2rem;
+  text-align: center;
+  color: #fff;
+  font-size: 1.5rem;
+  font-weight: 800;
+}
+
+.add-action {
+  min-height: 9.5rem;
+  background: #fff;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #111;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.add-action svg {
+  width: 3.4rem;
+  height: 3.4rem;
+  padding: 0.75rem;
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(135deg, #29c7df, #25cf8d);
+}
+
+.add-action-large {
+  min-height: 8rem;
+  margin-bottom: 0.75rem;
+}
+
+.add-action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.add-modal-close {
+  width: 4.4rem;
+  height: 4.4rem;
+  margin: 2.2rem auto 0;
+  border: none;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #29c7df, #25cf8d);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.add-modal-close svg {
+  width: 2.4rem;
+  height: 2.4rem;
+}
+
+/* 카메라 */
+.camera-page {
+  height: 100%;
+  padding: 0;
+}
+
+.camera-frame {
+  position: relative;
+  height: 100%;
+  background: #555;
+  overflow: hidden;
+}
+
+.camera-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-back {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.2rem;
+  z-index: 3;
+  width: 3.2rem;
+  height: 3.2rem;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 2.4rem;
+}
+
+.scan-corner {
+  position: absolute;
+  z-index: 3;
+  width: 4.2rem;
+  height: 4.2rem;
+  border-color: #22c7de;
+  border-style: solid;
+}
+
+.scan-corner.top-left {
+  top: 8rem;
+  left: 1.3rem;
+  border-width: 0.45rem 0 0 0.45rem;
+  border-radius: 8px 0 0 0;
+}
+
+.scan-corner.top-right {
+  top: 8rem;
+  right: 1.3rem;
+  border-width: 0.45rem 0.45rem 0 0;
+  border-radius: 0 8px 0 0;
+}
+
+.scan-corner.bottom-left {
+  bottom: 8rem;
+  left: 1.3rem;
+  border-width: 0 0 0.45rem 0.45rem;
+  border-radius: 0 0 0 8px;
+}
+
+.scan-corner.bottom-right {
+  bottom: 8rem;
+  right: 1.3rem;
+  border-width: 0 0.45rem 0.45rem 0;
+  border-radius: 0 0 8px 0;
+}
+
+.camera-shot-btn {
+  position: absolute;
+  left: 50%;
+  bottom: 3rem;
+  transform: translateX(-50%);
+  z-index: 3;
+  width: 4.8rem;
+  height: 4.8rem;
+  border: 0.35rem solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #29c7df, #25cf8d);
+  color: #fff;
+}
+
+.camera-shot-btn svg {
+  width: 2.3rem;
+  height: 2.3rem;
+}
+
+/* 처방전 미리보기 */
+.preview-page {
+  padding: 0;
+}
+
+.preview-steps {
+  display: flex;
+  gap: 0.35rem;
+  margin: 0 0 1rem;
+}
+
+.preview-steps span {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 999px;
+  background: #d8d8d8;
+}
+
+.preview-steps span.active {
+  width: 1.3rem;
+  background: #21c3da;
+}
+
+.preview-image-box {
+  width: 100%;
+  height: 18rem;
+  border: 1px dashed #cfcfcf;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-image-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.preview-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  margin-top: 1.2rem;
+}
+
+.preview-prev-btn,
+.preview-next-btn {
+  height: 3.5rem;
+  border: none;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.preview-prev-btn {
+  background: #f4f4f4;
+  color: #444;
+}
+
+.preview-next-btn {
+  background: #21bdd3;
+  color: #fff;
+}
+
+/* OCR 로딩 */
+.scan-loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.62);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scan-loading-overlay[hidden] {
+  display: none !important;
+}
+
+.scan-loading-content {
+  text-align: center;
+  color: #fff;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.scan-logo {
+  width: 7rem;
+  height: 7rem;
+  margin: 0 auto 1.5rem;
+  border-radius: 32px;
+  background: linear-gradient(135deg, #25cf8d, #21bdd3);
+  transform: rotate(45deg);
+  opacity: 0.95;
+}
+
+/* OCR 결과 */
+.ocr-result-title {
+  margin: 1.2rem 0 1rem;
+  font-size: 1.45rem;
+  font-weight: 900;
+}
+
+.ocr-medicine-card {
+  display: grid;
+  grid-template-columns: 4.2rem 1fr;
+  gap: 0.75rem;
+  background: #eefcff;
+  border-radius: 10px;
+  padding: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.ocr-medicine-thumb {
+  width: 4.2rem;
+  height: 4.2rem;
+  border-radius: 8px;
+  background: #dceeee;
+}
+
+.ocr-medicine-info strong {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 900;
+}
+
+.ocr-medicine-info p {
+  margin: 0.25rem 0 0;
+  font-size: 0.95rem;
+}
+
+.ocr-medicine-info span {
+  color: #18bdda;
+  font-weight: 900;
+}
+
+.ocr-medicine-actions {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.ocr-medicine-actions button {
+  height: 2.4rem;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #21bdd3;
+  font-weight: 700;
+}
+
+.ocr-add-btn {
+  width: 100%;
+  height: 3.4rem;
+  margin-top: 0.8rem;
+  border: none;
+  border-radius: 999px;
+  background: #21bdd3;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 900;
+}
+
+/* 약 검색 */
+.medicine-search-page {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+
+.medicine-search-form {
+  position: relative;
+  flex-shrink: 0;
+  margin-top: 1.3rem;
+}
+
+.medicine-search-form svg {
+  position: absolute;
+  left: 1.1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2rem;
+  height: 2rem;
+  color: #c9c9c9;
+}
+
+.medicine-search-form input {
+  width: 100%;
+  height: 4.2rem;
+  padding: 0 1rem 0 4rem;
+  border: 1.5px solid #21bdd3;
+  border-radius: 4px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  outline: none;
+}
+
+.medicine-search-form input::placeholder {
+  color: #c9c9c9;
+}
+
+.medicine-search-list {
+  flex: 1;
+  min-height: 0;
+  margin-top: 1rem;
+  overflow-y: auto;
+  padding-bottom: 1rem;
+}
+
+.medicine-search-card {
+  display: grid;
+  grid-template-columns: 5rem 1fr 3rem;
+  align-items: center;
+  gap: 0.8rem;
+  height: 6.6rem;
+  padding: 0.75rem;
+  margin-bottom: 0.8rem;
+  background: #eefcff;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.medicine-search-thumb {
+  width: 4.4rem;
+  height: 4.4rem;
+  border-radius: 10px;
+  background: #dceeee;
+}
+
+.medicine-search-info {
+  overflow: hidden;
+}
+
+.medicine-search-info strong {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.25;
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+.medicine-search-info p {
+  margin: 0.2rem 0 0;
+  color: #666;
+  font-size: 0.92rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.medicine-check-btn {
+  width: 2.7rem;
+  height: 2.7rem;
+  border: none;
+  border-radius: 50%;
+  background: #c8c8c8;
+  color: #fff;
+}
+
+.medicine-check-btn svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.ocr-edit-link {
+  height: 2.4rem;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #21bdd3;
+  font-weight: 700;
+  color: #18bdda;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-medicine-card {
+  background: #eefcff;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+}
+
+.edit-medicine-image {
+  width: 10rem;
+  height: 10rem;
+  margin: 0 auto 0.8rem;
+  border-radius: 10px;
+  background: #dceeee;
+}
+
+.edit-medicine-card strong {
+  font-size: 1.4rem;
+  font-weight: 900;
+}
+
+.edit-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 1.3rem 0;
+  border-bottom: 1px solid #eee;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.edit-row input {
+  width: 3rem;
+  border: none;
+  color: #18bdda;
+  font-size: 1.4rem;
+  font-weight: 900;
+  text-align: center;
+}
+
+.count-btn {
+  width: 2.2rem;
+  height: 2.2rem;
+  border: 1px solid #21bdd3;
+  border-radius: 6px;
+  background: #fff;
+  color: #18bdda;
+  font-size: 1.2rem;
+  font-weight: 900;
+}
+
+.edit-submit-btn {
+  position: absolute;
+  left: 1.25rem;
+  right: 1.25rem;
+  bottom: calc(var(--nav-height) + 1.2rem);
+  width: auto;
+}
+
+.save-loading-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 250;
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.save-loading-overlay[hidden] {
+  display: none !important;
+}
+
+.save-loading-content {
+  text-align: center;
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1.5;
 }

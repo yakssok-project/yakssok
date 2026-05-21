@@ -1,0 +1,69 @@
+{% extends 'medicines/base_app.html' %}
+{% load static %}
+
+{% block title %}처방전 촬영 - 약쏙{% endblock %}
+{% block header_title %}약추가하기{% endblock %}
+
+{% block content %}
+<section class="camera-page">
+  <div class="camera-frame">
+    <button type="button" class="camera-back" onclick="history.back()">‹</button>
+
+    <video id="cameraPreview" autoplay playsinline class="camera-video"></video>
+
+    <div class="scan-corner top-left"></div>
+    <div class="scan-corner top-right"></div>
+    <div class="scan-corner bottom-left"></div>
+    <div class="scan-corner bottom-right"></div>
+
+    <button type="button" class="camera-shot-btn" id="captureBtn">
+      <i data-lucide="camera"></i>
+    </button>
+  </div>
+
+  <canvas id="cameraCanvas" hidden></canvas>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener("DOMContentLoaded", async function () {
+    if (window.lucide) lucide.createIcons();
+
+    const video = document.getElementById("cameraPreview");
+    const canvas = document.getElementById("cameraCanvas");
+    const captureBtn = document.getElementById("captureBtn");
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" },
+        audio: false,
+      });
+
+      video.srcObject = stream;
+    } catch (error) {
+      alert("카메라를 실행할 수 없습니다.");
+      return;
+    }
+
+    captureBtn.addEventListener("click", function () {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      const context = canvas.getContext("2d");
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob(function (blob) {
+        const reader = new FileReader();
+
+        reader.onload = function (event) {
+          sessionStorage.setItem("selectedPrescriptionImage", event.target.result);
+          window.location.href = "{% url 'prescription_preview' %}";
+        };
+
+        reader.readAsDataURL(blob);
+      }, "image/jpeg", 0.95);
+    });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% extends 'medicines/base_app.html' %}
+{% load static %}
+
+{% block title %}약 추가하기 - 약쏙{% endblock %}
+{% block header_title %}약 추가하기{% endblock %}
+
+{% block content %}
+<section class="preview-page">
+  <div class="preview-steps">
+    <span></span>
+    <span class="active"></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <div class="preview-image-box">
+    <img id="previewImage" alt="처방전 미리보기" />
+  </div>
+
+  <div class="scan-loading-overlay" id="scanLoadingOverlay" hidden>
+    <div class="scan-loading-content">
+        <div class="scan-logo"></div>
+        <p>사진을 스캔하고 있어요<br />잠시만 기다려주세요</p>
+    </div>
+  </div>
+
+  <form id="ocrForm" method="post" enctype="multipart/form-data" action="{% url 'prescription_loading' %}">
+    {% csrf_token %}
+    <input type="file" name="image" id="ocrImageInput" hidden />
+
+    <div class="preview-actions">
+      <button type="button" class="preview-prev-btn" onclick="history.back()">이전</button>
+      <button type="submit" class="preview-next-btn">다음</button>
+    </div>
+  </form>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function dataURLToFile(dataUrl, filename) {
+    const arr = dataUrl.split(",");
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const binary = atob(arr[1]);
+    let length = binary.length;
+    const u8arr = new Uint8Array(length);
+
+    while (length--) {
+      u8arr[length] = binary.charCodeAt(length);
+    }
+
+    return new File([u8arr], filename, { type: mime });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const imageData = sessionStorage.getItem("selectedPrescriptionImage");
+    const previewImage = document.getElementById("previewImage");
+    const fileInput = document.getElementById("ocrImageInput");
+
+    if (!imageData) {
+      history.back();
+      return;
+    }
+
+    previewImage.src = imageData;
+
+    const file = dataURLToFile(imageData, "prescription.jpg");
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    fileInput.files = dataTransfer.files;
+
+    const form = document.getElementById("ocrForm");
+    const loadingOverlay = document.getElementById("scanLoadingOverlay");
+
+    if (form && loadingOverlay) {
+        form.addEventListener("submit", function () {
+            loadingOverlay.hidden = false;
+        });
+    }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'medicines/base_app.html' %}
+{% load static %}
+
+{% block title %}약 검색 - 약쏙{% endblock %}
+{% block header_title %}약 추가하기{% endblock %}
+
+{% block content %}
+<section class="medicine-search-page">
+  <div class="preview-steps">
+    <span></span>
+    <span class="active"></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+  <form method="get" class="medicine-search-form">
+    <i data-lucide="search"></i>
+
+    <input
+      type="search"
+      name="q"
+      value="{{ query }}"
+      placeholder="찾으시는 약을 검색해주세요"
+      autocomplete="off"
+      autofocus
+    />
+  </form>
+
+  {% if query %}
+    <div class="medicine-search-list">
+      {% for med in medicines %}
+        <article class="medicine-search-card">
+          <div class="medicine-search-thumb"></div>
+
+          <div class="medicine-search-info">
+            <strong>{{ med.product_name }}</strong>
+            <p>{{ med.ingredient_name }}</p>
+          </div>
+
+          <form method="post" action="{% url 'medicine_search_select' %}">
+            {% csrf_token %}
+            <input type="hidden" name="name" value="{{ med.product_name }}">
+            <input type="hidden" name="ingredient" value="{{ med.ingredient_name }}">
+
+            <button type="submit" class="medicine-check-btn">
+              <i data-lucide="check"></i>
+            </button>
+          </form>
+        </article>
+      {% empty %}
+        <p class="empty-message">검색 결과가 없습니다.</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector(".medicine-search-form");
+    const input = form.querySelector("input[name='q']");
+
+    let timer = null;
+
+    input.addEventListener("input", function () {
+      clearTimeout(timer);
+
+      timer = setTimeout(function () {
+        form.submit();
+      }, 400);
+    });
+  });
+</script>
+{% endblock %}

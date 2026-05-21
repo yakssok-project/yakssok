@@ -7,10 +7,7 @@
 
     <title>{% block title %}약쏙{% endblock %}</title>
 
-    <!-- 공통 CSS -->
     <link rel="stylesheet" href="{% static 'medicines/css/common.css' %}" />
-
-    <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
     {% block extra_css %}{% endblock %}
@@ -18,10 +15,8 @@
 
   <body class="app-page {% block body_class %}{% endblock %}">
     <div class="app-shell">
-      <!-- 헤더 -->
       <header class="app-header">
         {% block header %}
-
         <a
           href="{% block header_back_url %}{% url 'home' %}{% endblock %}"
           class="header-back"
@@ -35,23 +30,120 @@
         </h1>
 
         <span class="header-spacer" aria-hidden="true"></span>
-
         {% endblock %}
       </header>
 
-      <!-- 메인 -->
-      <main class="app-main">{% block content %}{% endblock %}</main>
+      <main class="app-main">
+        {% block content %}{% endblock %}
+      </main>
 
-      <!-- 하단 네비 -->
       {% include 'medicines/includes/bottom_nav.html' %}
+
+      <div class="add-medicine-overlay" id="addMedicineOverlay" hidden>
+        <section class="add-medicine-modal">
+          <h2 class="add-medicine-title">약물을 등록하시나요?</h2>
+
+          <a
+            href="{% url 'prescription_camera' %}"
+            class="add-action add-action-large"
+          >
+            <i data-lucide="camera"></i>
+            <strong>직접 촬영하기</strong>
+          </a>
+
+          <div class="add-action-row">
+            <a href="#" class="add-action" id="openGalleryUpload">
+              <i data-lucide="image-plus"></i>
+              <strong>사진으로<br />등록하기</strong>
+            </a>
+
+            <a href="{% url 'medicine_search_add' %}" class="add-action">
+              <i data-lucide="search"></i>
+              <strong>검색으로<br />등록하기</strong>
+            </a>
+          </div>
+
+          <input
+            type="file"
+            id="galleryImageInput"
+            accept="image/*"
+            hidden
+          />
+
+          <button
+            type="button"
+            class="add-modal-close"
+            id="closeAddMedicineModal"
+          >
+            <i data-lucide="x"></i>
+          </button>
+        </section>
+      </div>
     </div>
 
     {% block extra_js %}{% endblock %}
 
-    <!-- Lucide Icon Render -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        lucide.createIcons();
+        if (window.lucide) {
+          lucide.createIcons();
+        }
+
+        const openBtn = document.getElementById("openAddMedicineModal");
+        const closeBtn = document.getElementById("closeAddMedicineModal");
+        const overlay = document.getElementById("addMedicineOverlay");
+
+        if (openBtn && overlay) {
+          openBtn.addEventListener("click", function () {
+            overlay.hidden = false;
+
+            if (window.lucide) {
+              lucide.createIcons();
+            }
+          });
+        }
+
+        if (closeBtn && overlay) {
+          closeBtn.addEventListener("click", function () {
+            overlay.hidden = true;
+          });
+        }
+
+        if (overlay) {
+          overlay.addEventListener("click", function (event) {
+            if (event.target === overlay) {
+              overlay.hidden = true;
+            }
+          });
+        }
+
+        const openGalleryBtn = document.getElementById("openGalleryUpload");
+        const galleryInput = document.getElementById("galleryImageInput");
+
+        if (openGalleryBtn && galleryInput) {
+          openGalleryBtn.addEventListener("click", function (event) {
+            event.preventDefault();
+            galleryInput.click();
+          });
+
+          galleryInput.addEventListener("change", function () {
+            const file = galleryInput.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+
+            reader.onload = function (event) {
+              sessionStorage.setItem(
+                "selectedPrescriptionImage",
+                event.target.result
+              );
+
+              window.location.href = "{% url 'prescription_preview' %}";
+            };
+
+            reader.readAsDataURL(file);
+          });
+        }
       });
     </script>
   </body>
