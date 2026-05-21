@@ -1,84 +1,160 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>홈 - 약쏙</title>
-    <link rel="stylesheet" href="{% static 'medicines/css/home.css' %}">
-</head>
-<body class="home-page">
-    <header class="home-header">
-        <h1 class="home-logo">약쏙</h1>
-        <button type="button" class="icon-btn notification-btn" aria-label="알림">
-            <span class="icon-bell" aria-hidden="true"></span>
-        </button>
-    </header>
+{% extends 'medicines/base_app.html' %} {% load static %} {% block title %}홈 -
+약쏙{% endblock %} {% block extra_css %}
+<link rel="stylesheet" href="{% static 'medicines/css/home.css' %}" />
+{% endblock %} {% block header %}
+<div class="home-topbar">
+  <div class="home-brand">
+    <img
+      src="{% static 'medicines/img/logo.jpg' %}"
+      alt="약쏙"
+      class="home-logo-img"
+    />
 
-    <main class="home-main">
-        <section class="greeting-section">
-            <p class="greeting-label">안녕하세요</p>
-            <h2 class="greeting-name">{{ user.name }}님</h2>
-        </section>
+    <span class="home-logo-text">약쏙</span>
+  </div>
 
-        {% if has_medicines %}
-        <p class="medicine-summary">
-            먹어야 할 약은 <strong>{{ medicine_count }}개</strong> 입니다.
-        </p>
+  <button type="button" class="home-bell" aria-label="알림">
+    <i data-lucide="bell"></i>
+  </button>
+</div>
+{% endblock %} {% block content %}
+<section class="home-today">
+  <div class="home-title-row">
+    <h2 class="home-title">
+      {% now "n월 j일 l" %},<br />
+      먹어야 할 약은 {{ medicine_count }}개 입니다.
+    </h2>
 
-        <ul class="medicine-card-list" aria-label="복용 예정 약 목록">
-            {% for item in medicine_items %}
-            <li class="medicine-card">
-                <span class="medicine-card-badge">다음 복용</span>
-                <p class="medicine-card-next">{{ item.next_intake_label }}</p>
-                <h3 class="medicine-card-name">{{ item.medicine.medicine_name }}</h3>
-                <dl class="medicine-card-meta">
-                    <div class="meta-row">
-                        <dt>복용 시간</dt>
-                        <dd>{{ item.intake_times_display }}</dd>
-                    </div>
-                    <div class="meta-row">
-                        <dt>복용 횟수</dt>
-                        <dd>{{ item.medicine.frequency }}</dd>
-                    </div>
-                </dl>
-                {% if item.medicine.alarm_enabled %}
-                <span class="alarm-tag">알림 켜짐</span>
-                {% endif %}
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <p class="empty-message" role="status">현재 등록된 약이 없습니다.</p>
-        {% endif %}
+    <a href="{% url 'medicine_list' %}" class="home-more">더 보기</a>
+  </div>
 
-        <a href="#" class="promo-banner" aria-label="내 약, 얼마나 남았을까?">
-            <span class="promo-banner-text">내 약, 얼마나 남았을까?</span>
-            <span class="promo-banner-arrow" aria-hidden="true">›</span>
-        </a>
-    </main>
+  {% if has_medicines %}
+  <div class="today-card-scroll">
+    {% for item in medicine_items %}
+    <article class="today-medicine-card">
+      <p class="today-time">오전 09:00 | 식후</p>
 
-    <nav class="bottom-nav" aria-label="메인 메뉴">
-        <a href="{% url 'home' %}" class="nav-item nav-item-active" aria-current="page">
-            <span class="nav-icon nav-icon-home" aria-hidden="true"></span>
-            <span class="nav-label">홈</span>
-        </a>
-        <a href="{% url 'medicine_list' %}" class="nav-item">
-            <span class="nav-icon nav-icon-medicine" aria-hidden="true"></span>
-            <span class="nav-label">내 약</span>
-        </a>
-        <a href="#" class="nav-item nav-item-disabled" aria-disabled="true">
-            <span class="nav-icon nav-icon-scan" aria-hidden="true"></span>
-            <span class="nav-label">스캔</span>
-        </a>
-        <a href="{% url 'pharmacy_map' %}" class="nav-item">
-            <span class="nav-icon nav-icon-pharmacy" aria-hidden="true"></span>
-            <span class="nav-label">약국</span>
-        </a>
-        <a href="#" class="nav-item nav-item-disabled" aria-disabled="true">
-            <span class="nav-icon nav-icon-my" aria-hidden="true"></span>
-            <span class="nav-label">마이</span>
-        </a>
-    </nav>
-</body>
-</html>
+      <div class="today-medicine-info">
+        <div class="today-thumb"></div>
+
+        <div class="today-text">
+          <span class="today-badge">처방약</span>
+          <strong>{{ item.medicine.medicine_name }}</strong>
+        </div>
+      </div>
+
+      <button type="button" class="today-check-btn">
+        <span class="today-check-icon"></span>
+        <span>복용 후 여기를 눌러주세요</span>
+      </button>
+    </article>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="today-card-scroll">
+    <article class="today-medicine-card">
+      <p class="today-time">오전 09:00 | 식후</p>
+
+      <div class="today-medicine-info">
+        <div class="today-thumb"></div>
+
+        <div class="today-text">
+          <span class="today-badge">처방약</span>
+          <strong>어쩌고 저쩌고 약</strong>
+        </div>
+      </div>
+
+      <button type="button" class="today-check-btn">
+        <span class="today-check-icon"></span>
+        <span>복용 후 여기를 눌러주세요</span>
+      </button>
+    </article>
+
+    <article class="today-medicine-card">
+      <p class="today-time">오전 09:00 | 식후</p>
+
+      <div class="today-medicine-info">
+        <div class="today-thumb"></div>
+
+        <div class="today-text">
+          <span class="today-badge">처방약</span>
+          <strong>어쩌고 저쩌고 약</strong>
+        </div>
+      </div>
+
+      <button type="button" class="today-check-btn">
+        <span class="today-check-icon"></span>
+        <span>복용 후 여기를 눌러주세요</span>
+      </button>
+    </article>
+  </div>
+  {% endif %}
+
+  <button type="button" class="all-taken-btn">모두 먹었어요</button>
+</section>
+
+<section class="home-banner-section">
+  <div class="banner-scroll">
+    <a href="{% url 'medicine_list' %}" class="home-banner">
+      <div>
+        <strong>내 약, 얼마나 남았을까?</strong>
+        <span>약 목록 바로가기 &gt;</span>
+      </div>
+      <img
+        src="{% static 'medicines/img/medicine.png' %}"
+        alt=""
+        class="banner-image"
+      />
+    </a>
+
+    <a href="{% url 'prescription_upload' %}" class="home-banner">
+      <div>
+        <strong>새로운 약이 추가되었나요?</strong>
+        <span>약 추가 바로가기 &gt;</span>
+      </div>
+      <img
+        src="{% static 'medicines/img/pharmacy.png' %}"
+        alt=""
+        class="banner-image"
+      />
+    </a>
+
+    <a href="{% url 'pharmacy_map' %}" class="home-banner">
+      <div>
+        <strong>부작용이 걱정되나요?</strong>
+        <span>약국 전화 바로가기 &gt;</span>
+      </div>
+      <img
+        src="{% static 'medicines/img/call.png' %}"
+        alt=""
+        class="banner-image"
+      />
+    </a>
+  </div>
+
+  <div class="banner-dots">
+    <span class="active"></span>
+    <span></span>
+    <span></span>
+  </div>
+</section>
+{% endblock %} {% block extra_js %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const bannerScroll = document.querySelector(".banner-scroll");
+    const dots = document.querySelectorAll(".banner-dots span");
+
+    if (!bannerScroll || dots.length === 0) return;
+
+    bannerScroll.addEventListener("scroll", function () {
+      const index = Math.round(
+        bannerScroll.scrollLeft / bannerScroll.clientWidth,
+      );
+
+      dots.forEach(function (dot, i) {
+        dot.classList.toggle("active", i === index);
+      });
+    });
+  });
+</script>
+{% endblock %}

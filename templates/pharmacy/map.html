@@ -4,7 +4,7 @@
 {% block title %}주변 약국 - 약쏙{% endblock %}
 {% block body_class %}pharmacy-page{% endblock %}
 {% block header_back_url %}{% url 'home' %}{% endblock %}
-{% block header_title %}주변 약국{% endblock %}
+{% block header_title %}약국찾기{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'pharmacy/css/pharmacy.css' %}">
@@ -12,71 +12,147 @@
 
 {% block content %}
 <div
-    id="pharmacy-app"
-    class="pharmacy-app"
-    data-api-nearby="{% url 'pharmacy_nearby_api' %}"
-    data-js-key="{{ kakao_javascript_key }}"
-    data-configured="{% if kakao_configured %}true{% else %}false{% endif %}"
+  id="pharmacy-app"
+  class="pharmacy-app"
+  data-api-nearby="{% url 'pharmacy_nearby_api' %}"
+  data-js-key="{{ kakao_javascript_key }}"
+  data-configured="{% if kakao_configured %}true{% else %}false{% endif %}"
 >
-    {% if not kakao_configured %}
-    <div class="pharmacy-alert" role="alert">
-        <p><strong>카카오 API 키가 필요합니다.</strong></p>
-        <p>환경 변수 <code>KAKAO_JAVASCRIPT_KEY</code>(지도)와 <code>KAKAO_REST_API_KEY</code>(약국 검색)를 설정한 뒤 서버를 다시 시작해주세요.</p>
-    </div>
-    {% else %}
-    <div class="pharmacy-search-bar">
-        <label for="pharmacy-search" class="visually-hidden">약국 이름 검색</label>
-        <input type="search" id="pharmacy-search" class="pharmacy-search-input" placeholder="약국 이름 검색" autocomplete="off">
+  {% if not kakao_configured %}
+  <div class="pharmacy-alert" role="alert">
+    <p><strong>카카오 API 키가 필요합니다.</strong></p>
+    <p>
+      환경 변수 <code>KAKAO_JAVASCRIPT_KEY</code>와
+      <code>KAKAO_REST_API_KEY</code>를 설정한 뒤 서버를 다시 시작해주세요.
+    </p>
+  </div>
+  {% else %}
+
+  <div class="pharmacy-search-bar">
+    <label for="pharmacy-search" class="visually-hidden">약국 이름 검색</label>
+    <input
+      type="search"
+      id="pharmacy-search"
+      class="pharmacy-search-input"
+      placeholder="약국 이름 검색"
+      autocomplete="off"
+    >
+  </div>
+
+  <div class="pharmacy-tabs" role="tablist">
+    <button
+      type="button"
+      class="pharmacy-tab pharmacy-tab-active"
+      role="tab"
+      aria-selected="true"
+      data-tab="map"
+      id="tab-map"
+    >
+      지도 보기
+    </button>
+
+    <button
+      type="button"
+      class="pharmacy-tab"
+      role="tab"
+      aria-selected="false"
+      data-tab="list"
+      id="tab-list"
+    >
+      목록 보기
+    </button>
+
+    <button type="button" class="pharmacy-sort">
+      거리순 ▼
+    </button>
+  </div>
+
+  <div
+    id="pharmacy-view-map"
+    class="pharmacy-view pharmacy-view-map"
+    role="tabpanel"
+    aria-labelledby="tab-map"
+  >
+    <div id="kakao-map" class="kakao-map" aria-label="약국 지도"></div>
+
+    <button
+      type="button"
+      id="btn-my-location"
+      class="fab-location"
+      aria-label="현재 위치로 이동"
+    >
+      <span class="fab-icon" aria-hidden="true">◎</span>
+    </button>
+  </div>
+
+  <div
+    id="pharmacy-view-list"
+    class="pharmacy-view pharmacy-view-list"
+    role="tabpanel"
+    aria-labelledby="tab-list"
+    hidden
+  >
+    <ul id="pharmacy-list" class="pharmacy-list" aria-label="약국 목록"></ul>
+  </div>
+
+  <div id="pharmacy-bottom-card" class="pharmacy-bottom-card" hidden>
+    <button
+      type="button"
+      class="bottom-card-close"
+      id="bottom-card-close"
+      aria-label="닫기"
+    >
+      ×
+    </button>
+
+    <div class="bottom-card-thumb-wrap">
+      <img
+        id="bottom-card-img"
+        src=""
+        alt=""
+        class="bottom-card-img"
+        width="72"
+        height="72"
+        hidden
+      >
+      <div
+        id="bottom-card-placeholder"
+        class="bottom-card-placeholder"
+        aria-hidden="true"
+      ></div>
     </div>
 
-    <div class="pharmacy-tabs" role="tablist">
-        <button type="button" class="pharmacy-tab pharmacy-tab-active" role="tab" aria-selected="true" data-tab="map" id="tab-map">지도 보기</button>
-        <button type="button" class="pharmacy-tab" role="tab" aria-selected="false" data-tab="list" id="tab-list">목록 보기</button>
-    </div>
+    <div class="bottom-card-body">
+      <h2 id="bottom-card-name" class="bottom-card-name"></h2>
+      <p id="bottom-card-status" class="bottom-card-meta"></p>
+      <p id="bottom-card-close-time" class="bottom-card-meta"></p>
+      <p id="bottom-card-address" class="bottom-card-address"></p>
 
-    <div id="pharmacy-view-map" class="pharmacy-view pharmacy-view-map" role="tabpanel" aria-labelledby="tab-map">
-        <div id="kakao-map" class="kakao-map" aria-label="약국 지도"></div>
-        <button type="button" id="btn-my-location" class="fab-location" aria-label="현재 위치로 이동">
-            <span class="fab-icon" aria-hidden="true">◎</span>
-        </button>
-    </div>
-
-    <div id="pharmacy-view-list" class="pharmacy-view pharmacy-view-list" role="tabpanel" aria-labelledby="tab-list" hidden>
-        <ul id="pharmacy-list" class="pharmacy-list" aria-label="약국 목록"></ul>
-    </div>
-
-    <div id="pharmacy-bottom-card" class="pharmacy-bottom-card" hidden>
-        <button type="button" class="bottom-card-close" id="bottom-card-close" aria-label="닫기">×</button>
-        <div class="bottom-card-thumb-wrap">
-            <img id="bottom-card-img" src="" alt="" class="bottom-card-img" width="72" height="72" hidden>
-            <div id="bottom-card-placeholder" class="bottom-card-placeholder" aria-hidden="true"></div>
-        </div>
-        <div class="bottom-card-body">
-    <h2 id="bottom-card-name" class="bottom-card-name"></h2>
-    <p id="bottom-card-status" class="bottom-card-meta"></p>
-    <p id="bottom-card-close-time" class="bottom-card-meta"></p>
-    <p id="bottom-card-address" class="bottom-card-address"></p>
-
-    <div class="bottom-card-actions">
-        <a id="bottom-card-route"
-           class="btn-pharmacy btn-pharmacy-outline"
-           href="#"
-           target="_blank"
-           rel="noopener noreferrer">
-           길 찾기
+      <div class="bottom-card-actions">
+        <a
+          id="bottom-card-route"
+          class="btn-pharmacy btn-pharmacy-outline"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          길 찾기
         </a>
 
-        <a id="bottom-card-tel"
-           class="btn-pharmacy btn-pharmacy-primary"
-           href="#">
-           전화하기
+        <a
+          id="bottom-card-tel"
+          class="btn-pharmacy btn-pharmacy-primary"
+          href="#"
+        >
+          전화하기
         </a>
+      </div>
     </div>
-</div>
-    </div>
+  </div>
 
-    <p id="pharmacy-status" class="pharmacy-status" role="status"></p>
-    {% endif %}
+  <p id="pharmacy-status" class="pharmacy-status" role="status"></p>
+
+  {% endif %}
 </div>
 {% endblock %}
 

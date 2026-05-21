@@ -3,32 +3,37 @@
     href="{% url 'home' %}"
     class="nav-item{% if nav_active == 'home' %} nav-item-active{% endif %}"
   >
-    <span class="nav-icon nav-icon-home" aria-hidden="true"></span>
+    <i data-lucide="house" class="nav-lucide"></i>
     <span class="nav-label">홈</span>
   </a>
+
   <a
     href="{% url 'medicine_list' %}"
     class="nav-item{% if nav_active == 'medicines' %} nav-item-active{% endif %}"
   >
-    <span class="nav-icon nav-icon-medicine" aria-hidden="true"></span>
-    <span class="nav-label">내 약</span>
+    <i data-lucide="clipboard-list" class="nav-lucide"></i>
+    <span class="nav-label">약 목록</span>
   </a>
+
   <a
     href="{% url 'prescription_upload' %}"
-    class="nav-item{% if nav_active == 'scan' %} nav-item-active{% endif %}"
+    class="nav-item nav-item-center{% if nav_active == 'scan' %} nav-item-active{% endif %}"
   >
-    <span class="nav-icon nav-icon-scan" aria-hidden="true"></span>
-    <span class="nav-label">스캔</span>
+    <span class="nav-plus-circle">
+      <i data-lucide="plus" class="nav-plus-icon"></i>
+    </span>
   </a>
+
+  <a href="#" class="nav-item nav-item-disabled">
+    <i data-lucide="pill" class="nav-lucide"></i>
+    <span class="nav-label">복약 관리</span>
+  </a>
+
   <a
     href="{% url 'pharmacy_map' %}"
     class="nav-item{% if nav_active == 'pharmacy' %} nav-item-active{% endif %}"
   >
-    <span class="nav-icon nav-icon-pharmacy" aria-hidden="true"></span>
-    <span class="nav-label">약국</span>
-  </a>
-  <a href="#" class="nav-item nav-item-disabled" aria-disabled="true">
-    <span class="nav-icon nav-icon-my" aria-hidden="true"></span>
-    <span class="nav-label">마이</span>
+    <i data-lucide="cross" class="nav-lucide"></i>
+    <span class="nav-label">약국 찾기</span>
   </a>
 </nav>
