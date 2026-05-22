@@ -5,4 +5,6 @@ db.sqlite3
 .env
 .vscode/
 requirements.md
-ddi_interactions_filtered.csv
+ddi_interactions_filtered.csv.DS_Store
+venv/
+.env
