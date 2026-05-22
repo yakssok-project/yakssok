@@ -8,6 +8,8 @@
 (function () {
     'use strict';
 
+    const noticeEl = document.getElementById('ddi-short-notice');
+
     const dataEl = document.getElementById('ddi-warnings-data');
     if (!dataEl) return;
 
@@ -23,13 +25,9 @@
 
     const overlay = document.getElementById('ddi-modal-overlay');
     const pairEl = document.getElementById('ddi-medicine-pair');
-    const learnMoreBtn = document.getElementById('ddi-learn-more');
     const confirmBtn = document.getElementById('ddi-confirm-btn');
-    const detailOverlay = document.getElementById('ddi-detail-overlay');
-    const reasonEl = document.getElementById('ddi-reason-text');
-    const detailCloseBtn = document.getElementById('ddi-detail-close');
 
-    if (!overlay || !pairEl || !learnMoreBtn || !confirmBtn || !detailOverlay || !reasonEl || !detailCloseBtn) {
+    if (!overlay || !pairEl || !noticeEl || !confirmBtn) {
         console.error('DDI 팝업에 필요한 DOM 요소가 없습니다.');
         return;
     }
@@ -78,23 +76,16 @@
 
         appendMedItem(pairEl, m2);
 
-        learnMoreBtn.dataset.reason = warning.reason != null ? String(warning.reason) : '';
+        noticeEl.textContent =
+            warning.easy_reason ||
+            warning.reason ||
+            '함께 복용할 때 주의가 필요해요. 복용 전 약사나 의사에게 확인해주세요.';
     }
 
     function showMainModal(show) {
         overlay.hidden = !show;
         lockBodyScroll(show && detailOverlay.hidden);
         if (show) {
-            confirmBtn.focus();
-        }
-    }
-
-    function showDetailModal(show) {
-        detailOverlay.hidden = !show;
-        lockBodyScroll(show || !overlay.hidden);
-        if (show) {
-            detailCloseBtn.focus();
-        } else if (!overlay.hidden) {
             confirmBtn.focus();
         }
     }
@@ -110,22 +101,16 @@
         showMainModal(true);
     }
 
-    learnMoreBtn.addEventListener('click', function () {
-        reasonEl.textContent = learnMoreBtn.dataset.reason || '상세 설명이 없습니다.';
-        showDetailModal(true);
-    });
-
-    detailCloseBtn.addEventListener('click', function () {
-        showDetailModal(false);
-    });
-
     confirmBtn.addEventListener('click', function () {
         showWarning(currentIndex + 1);
     });
 
-    detailOverlay.addEventListener('click', function (e) {
-        if (e.target === detailOverlay) {
-            showDetailModal(false);
+    document.addEventListener('keydown', function onKey(e) {
+        if (e.key !== 'Escape') return;
+
+        if (!overlay.hidden) {
+            showWarning(currentIndex + 1);
+            e.preventDefault();
         }
     });
 

@@ -129,3 +129,38 @@ bounding_box는 이미지 전체 기준으로 0~1000 사이 정규화 좌표 [x_
     )
 
     return json.loads(response.text)
+
+
+def explain_ddi_reason_with_gemini(reason):
+    """
+    금기사유 원문을 Gemini로 쉬운 설명으로 변환.
+    실패하면 원문을 그대로 반환.
+    """
+    if not reason:
+        return "복용 전 약사와 상담해주세요."
+
+    api_key = os.getenv("GEMINI_API_KEY")
+
+    if not api_key:
+        return reason
+
+    try:
+        client = genai.Client(api_key=api_key)
+
+        prompt = f"""
+다음은 두 약을 함께 복용할 때 주의해야 하는 금기 사유입니다.
+이 내용을 일반 사용자가 이해하기 쉽고 짧게 한국어 2~3문장으로 설명해주세요.
+
+금기사유: {reason}
+"""
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
+
+        return response.text.strip() or reason
+
+    except Exception as e:
+        print("DDI Gemini explanation error:", e)
+        return reason

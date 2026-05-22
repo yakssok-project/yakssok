@@ -7,7 +7,7 @@ from django.templatetags.static import static
 from .ddi import find_ddi_warnings
 from .models import UserMedicine
 from .utils import sort_medicines_by_next_intake
-
+from .utils import explain_ddi_reason_with_gemini
 from .utils import extract_medicines_from_prescription
 
 import csv
@@ -68,22 +68,26 @@ def medicine_list_view(request):
     all_user_medicines = list(_active_medicines(request.user))
     ddi_warnings = find_ddi_warnings(all_user_medicines)
 
-    warnings_for_js = [
-        {
-            'medicine_1': {
-                'id': w['medicine_1'].pk,
-                'name': w['medicine_1'].medicine_name,
-                'image': static(w['medicine_1'].image_static_path),
+    warnings_for_js = []
+
+    for w in ddi_warnings:
+        original_reason = w["reason"]
+        easy_reason = explain_ddi_reason_with_gemini(original_reason)
+
+        warnings_for_js.append({
+            "medicine_1": {
+                "id": w["medicine_1"].pk,
+                "name": w["medicine_1"].medicine_name,
+                "image": static(w["medicine_1"].image_static_path),
             },
-            'medicine_2': {
-                'id': w['medicine_2'].pk,
-                'name': w['medicine_2'].medicine_name,
-                'image': static(w['medicine_2'].image_static_path),
+            "medicine_2": {
+                "id": w["medicine_2"].pk,
+                "name": w["medicine_2"].medicine_name,
+                "image": static(w["medicine_2"].image_static_path),
             },
-            'reason': w['reason'],
-        }
-        for w in ddi_warnings
-    ]
+            "reason": original_reason,
+            "easy_reason": easy_reason,
+        })
 
     print("DDI warnings json:", warnings_for_js)
     print("DDI warnings:", ddi_warnings)

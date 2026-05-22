@@ -69,25 +69,16 @@
 {{ ddi_warnings_json|json_script:"ddi-warnings-data" }}
 <div class="modal-overlay" id="ddi-modal-overlay" hidden>
   <div class="modal-dialog ddi-modal" role="dialog" aria-modal="true" aria-labelledby="ddi-modal-title">
-    <h2 id="ddi-modal-title" class="modal-title">같은 성분의 약이 있어요</h2>
+    <h2 id="ddi-modal-title" class="modal-title">경고</h2>
     <p class="modal-desc" id="ddi-short-notice">
       이 약들은 같은 성분이 들어있어 함께 복용하면 몸에 무리가 갈 수 있어요.
       복용 전에 한 번 더 확인해주세요.
     </p>
     <div class="ddi-medicine-pair" id="ddi-medicine-pair"></div>
-    <button type="button" class="link-btn" id="ddi-learn-more">더 알아보기</button>
     <div class="modal-actions">
       <a href="tel:1339" class="btn btn-outline" id="ddi-consult-btn">약사에게 문의하기</a>
       <button type="button" class="btn btn-primary" id="ddi-confirm-btn">확인</button>
     </div>
-  </div>
-</div>
-
-<div class="modal-overlay" id="ddi-detail-overlay" hidden>
-  <div class="modal-dialog ddi-detail-modal" role="dialog" aria-modal="true" aria-labelledby="ddi-detail-title">
-    <h2 id="ddi-detail-title" class="modal-title">금기 사유</h2>
-    <p class="ddi-reason-text" id="ddi-reason-text"></p>
-    <button type="button" class="btn btn-primary btn-full" id="ddi-detail-close">확인</button>
   </div>
 </div>
 {% endif %}
