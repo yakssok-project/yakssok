@@ -1,277 +1,788 @@
-/* 약쏙 — 회원가입/로그인 (모바일 우선, 노인 친화 UI) */
+/* ================================
+   공통
+================================ */
 
-*,
-*::before,
-*::after {
+:root {
+    --yy-primary: #1CBBDA;
+    --yy-primary-light: #d4f5fa;
+    --yy-border: #d1d1d1;
+    --yy-gray: #d9d9d9;
+    --yy-text: #050505;
+}
+
+* {
     box-sizing: border-box;
 }
 
+html,
 body {
     margin: 0;
-    font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
-    font-size: 20px;
-    line-height: 1.6;
-    color: #1a1a1a;
-    background-color: #f5f7fa;
+    min-height: 100vh;
+    background: #f1f2f5;
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    color: var(--yy-text);
 }
 
 .page-wrap {
-    max-width: 480px;
+    width: 390px;
+    height: 844px;
+    min-height: 844px;
     margin: 0 auto;
-    min-height: 100vh;
-    padding: 1rem 1.25rem 2rem;
-}
-
-.site-header {
-    text-align: center;
-    padding: 1.5rem 0 1rem;
-}
-
-.site-logo {
-    margin: 0;
-    font-size: 2rem;
-    font-weight: 700;
-    color: #2563eb;
-    letter-spacing: -0.02em;
-}
-
-.header-desc {
-    margin: 0.5rem 0 0;
-    font-size: 1.125rem;
-    color: #4b5563;
-}
-
-.main-content {
-    padding-top: 0.5rem;
-}
-
-.auth-card,
-.home-card {
-    background: #fff;
-    border-radius: 16px;
-    padding: 1.75rem 1.5rem;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-}
-
-.auth-title {
-    margin: 0 0 1.25rem;
-    font-size: 1.5rem;
-    font-weight: 700;
-    text-align: center;
-}
-
-.progress-bar {
-    height: 10px;
-    background: #e5e7eb;
-    border-radius: 999px;
-    margin-bottom: 1.5rem;
+    padding: 0;
+    background: #ffffff;
+    position: relative;
     overflow: hidden;
 }
 
-.progress-fill {
-    height: 100%;
-    background: #2563eb;
-    border-radius: 999px;
-    transition: width 0.3s ease;
+.site-header {
+    display: none;
 }
 
-.auth-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.25rem;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.form-label {
-    font-size: 1.125rem;
-    font-weight: 600;
-}
-
-.auth-form input[type="text"],
-.auth-form input[type="password"],
-.auth-form input[type="tel"],
-.auth-form input[type="date"] {
+.main-content {
     width: 100%;
-    padding: 1rem 1.125rem;
-    font-size: 1.25rem;
-    border: 2px solid #d1d5db;
-    border-radius: 12px;
-    background: #fff;
-}
-
-.auth-form input:focus {
-    outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
-}
-
-.form-group.has-error input {
-    border-color: #dc2626;
-}
-
-/* 체크박스·라디오 — 터치 영역 확대 */
-.auth-form ul {
-    list-style: none;
-    margin: 0;
+    height: 100%;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
 }
 
-.auth-form ul li {
+/* ================================
+   로그인 / 시작 화면
+================================ */
+
+.login-page {
+    width: 100%;
+    height: 844px;
+    background: #ffffff;
+    position: relative;
+    color: var(--yy-text);
+}
+
+/* 상단 로고 / 알림 */
+.login-header {
+    height: 124px;
+    padding: 0 22px;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.875rem 1rem;
-    background: #f9fafb;
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
-    font-size: 1.125rem;
-    min-height: 3.25rem;
+    justify-content: space-between;
 }
 
-.auth-form ul li label {
-    flex: 1;
+.login-logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.login-logo-img {
+    width: 34px;
+    height: 28px;
+    object-fit: contain;
+}
+
+.login-logo-text {
+    font-size: 22px;
+    font-weight: 900;
+    color: #10c5ad;
+    letter-spacing: -0.06em;
+}
+
+.login-bell {
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
+}
+
+.login-bell svg {
+    display: block;
+}
+
+/* 첫 시작 화면 */
+.login-start-screen {
+    height: calc(100% - 124px);
+    position: relative;
+    padding: 52px 20px 0;
+}
+
+.login-main-copy {
+    margin: 0;
+    font-size: 25px;
+    line-height: 1.45;
+    font-weight: 800;
+    letter-spacing: -0.07em;
+    color: var(--yy-text);
+}
+
+/* 전화번호 로그인 화면 */
+.phone-login-screen {
+    height: calc(100% - 124px);
+    position: relative;
+    padding: 42px 20px 0;
+}
+
+.phone-login-form {
+    height: 100%;
+    position: relative;
+}
+
+.login-input-group {
+    margin-bottom: 18px;
+}
+
+.login-input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 25px;
+    line-height: 1.2;
+    font-weight: 800;
+    letter-spacing: -0.07em;
+    color: var(--yy-text);
+}
+
+.login-input-group input {
+    display: block;
+    width: 100%;
+    height: 62px;
+    padding: 0 18px;
+    border: 1.5px solid var(--yy-primary);
+    border-radius: 4px;
+    background: #ffffff;
+    color: #222222;
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    outline: none;
+}
+
+.login-input-group input::placeholder {
+    color: #cfcfcf;
     font-weight: 500;
 }
 
-.auth-form input[type="checkbox"],
-.auth-form input[type="radio"] {
-    width: 1.5rem;
-    height: 1.5rem;
-    flex-shrink: 0;
-    accent-color: #2563eb;
+.login-input-group input:focus {
+    border-color: var(--yy-primary);
+    box-shadow: none;
 }
 
-.form-hint {
-    margin: 0;
-    font-size: 1rem;
-    color: #6b7280;
+.login-error {
+    margin-top: 8px;
+    color: #e53935;
+    font-size: 14px;
+    font-weight: 700;
 }
 
-.field-error {
-    margin: 0;
-    font-size: 1.0625rem;
-    color: #dc2626;
-    font-weight: 600;
-}
-
-.error-box {
-    background: #fef2f2;
-    border: 2px solid #fecaca;
-    border-radius: 12px;
-    padding: 1rem 1.125rem;
-    margin-bottom: 1.25rem;
-}
-
-.error-box p {
-    margin: 0;
-    font-size: 1.125rem;
-    color: #b91c1c;
-    font-weight: 600;
-}
-
-.form-actions {
+/* 하단 버튼 영역 */
+/* 중요: 부모 화면이 이미 padding 20px을 갖고 있으므로 left/right는 0 */
+.login-bottom-area {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 52px;
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
-    margin-top: 0.5rem;
+    gap: 14px;
 }
 
-.btn {
+/* 버튼 공통 */
+.kakao-start-btn,
+.phone-start-btn,
+.signup-outline-btn,
+.login-main-btn {
+    width: 100%;
+    height: 52px;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* 카카오 버튼 */
+.kakao-start-btn {
+    border: none;
+    background: #ffdf00;
+    color: #111111;
+    position: relative;
+}
+
+.kakao-icon {
+    position: absolute;
+    left: 30px;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0;
+    background: #3b1e1e;
+    color: #ffdf00;
+    border-radius: 50%;
+    padding: 4px 3px;
+}
+
+/* 전화번호 시작 버튼 */
+.phone-start-btn {
+    border: 1.5px solid var(--yy-primary);
+    background: #ffffff;
+    color: var(--yy-primary);
+    position: relative;
+}
+
+.phone-icon {
+    position: absolute;
+    left: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.phone-icon svg {
+    display: block;
+}
+
+/* 회원가입 / 로그인 버튼 */
+.signup-outline-btn {
+    border: 1.5px solid var(--yy-primary);
+    background: #ffffff;
+    color: var(--yy-primary);
+}
+
+.login-main-btn {
+    border: none;
+    background: var(--yy-primary);
+    color: #ffffff;
+}
+
+/* ================================
+   온보딩 건강이력 화면
+================================ */
+
+.onboarding-page {
+    width: 100%;
+    height: 844px;
+    min-height: 844px;
+    background: #ffffff;
+    color: var(--yy-text);
+    position: relative;
+    overflow: hidden;
+}
+
+.onboarding-header {
+    height: 91px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.onboarding-title {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+}
+
+.onboarding-back {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-52%);
+    width: 28px;
+    height: 28px;
+    color: #111;
+    text-decoration: none;
+    font-size: 34px;
+    font-weight: 300;
+    line-height: 24px;
+}
+
+.onboarding-progress {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-left: 20px;
+    margin-top: 18px;
+    margin-bottom: 54px;
+}
+
+.progress-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #d9d9d9;
+    display: block;
+}
+
+.progress-dot.active {
+    width: 21px;
+    background: var(--yy-primary);
+}
+
+.onboarding-form {
+    height: calc(100% - 91px);
+}
+
+.onboarding-content {
+    padding: 0 20px 120px;
+}
+
+.onboarding-question {
+    margin: 0 0 38px;
+    font-size: 25px;
+    line-height: 1.45;
+    font-weight: 900;
+    letter-spacing: -0.07em;
+    color: var(--yy-text);
+}
+
+.onboarding-field input[type="text"],
+.onboarding-field input[type="tel"],
+.onboarding-field input[type="password"],
+.onboarding-field input[type="date"] {
+    width: 100%;
+    height: 62px;
+    padding: 0 18px;
+    border: 1.5px solid var(--yy-primary);
+    border-radius: 4px;
+    background: #ffffff;
+    color: #222;
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.04em;
+    outline: none;
+}
+
+.onboarding-field input::placeholder {
+    color: #cfcfcf;
+}
+
+.field-error,
+.onboarding-error {
+    margin: 10px 0 0;
+    color: #e53935;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* 선택 카드 */
+.choice-card-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.choice-card-wrap ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.choice-card-wrap li {
+    margin: 0 0 16px;
+}
+
+.choice-card,
+.choice-card-wrap li label {
+    width: 100%;
+    min-height: 72px;
+    border: 1px solid var(--yy-border);
+    border-radius: 4px;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 13px 0 18px;
+    color: #111;
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.05em;
+    cursor: pointer;
+}
+
+.choice-card input,
+.choice-card-wrap li input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.choice-check,
+.choice-card-wrap li label::after {
+    content: "✓";
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #cfcfcf;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+    font-weight: 900;
+    flex-shrink: 0;
+}
+
+.choice-card:has(input:checked),
+.choice-card-wrap li:has(input:checked) label {
+    background: var(--yy-primary-light);
+    border-color: #96dce6;
+}
+
+.choice-card:has(input:checked) .choice-check,
+.choice-card-wrap li:has(input:checked) label::after {
+    background: var(--yy-primary);
+}
+
+/* 질병 칩 */
+.disease-toggle {
+    margin-bottom: 20px;
+}
+
+.disease-chip-group ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 8px;
+}
+
+.disease-chip-group li {
+    margin: 0;
+}
+
+.disease-chip-group li label {
+    min-height: 36px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 999px;
+    background: #f3f3f3;
+    color: var(--yy-primary);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 3.5rem;
-    padding: 1rem 1.5rem;
-    font-size: 1.25rem;
-    font-weight: 700;
-    text-decoration: none;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+}
+
+.disease-chip-group li label::after {
+    display: none;
+}
+
+.disease-chip-group li input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.disease-chip-group li:has(input:checked) label {
+    background: var(--yy-primary-light);
+}
+
+.direct-search-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin: 24px auto 0;
     border: none;
-    border-radius: 12px;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.btn-primary {
-    background: #2563eb;
-    color: #fff;
-}
-
-.btn-primary:hover,
-.btn-primary:focus {
-    background: #1d4ed8;
-}
-
-.btn-secondary {
-    background: #e5e7eb;
-    color: #1f2937;
-}
-
-.btn-secondary:hover,
-.btn-secondary:focus {
-    background: #d1d5db;
-}
-
-.btn-full {
-    width: 100%;
-}
-
-.auth-link {
-    margin: 1.5rem 0 0;
-    text-align: center;
-    font-size: 1.125rem;
-}
-
-.auth-link a {
-    color: #2563eb;
-    font-weight: 700;
-    text-decoration: underline;
-    text-underline-offset: 3px;
-}
-
-.home-message {
-    font-size: 1.25rem;
-    text-align: center;
-    margin: 1rem 0;
-    color: #374151;
-}
-
-.logout-form {
-    margin-top: 2rem;
-}
-
-.message-list {
-    list-style: none;
-    padding: 0;
-    margin: 0 0 1rem;
-}
-
-.message {
-    padding: 1rem;
-    border-radius: 12px;
-    font-size: 1.125rem;
+    border-bottom: 1px solid #7f7f7f;
+    background: transparent;
+    color: #777;
+    font-size: 17px;
     font-weight: 600;
+    letter-spacing: -0.05em;
+    padding: 0 0 2px;
 }
 
-.message-error {
-    background: #fef2f2;
-    color: #b91c1c;
+.search-icon {
+    font-size: 25px;
+    line-height: 1;
+    color: #777;
 }
 
-@media (min-width: 481px) {
-    body {
-        font-size: 22px;
-    }
+/* 온보딩 하단 버튼 */
+.onboarding-bottom {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 34px;
+}
 
-    .site-logo {
-        font-size: 2.25rem;
+.onboarding-next {
+    width: 100%;
+    height: 52px;
+    border: none;
+    border-radius: 999px;
+    background: var(--yy-primary);
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.05em;
+    cursor: pointer;
+}
+
+/* 실제 모바일 화면 */
+@media (max-width: 430px) {
+    .page-wrap,
+    .login-page,
+    .onboarding-page {
+        width: 100%;
+        height: 100vh;
+        min-height: 100vh;
     }
+}
+/* ================================
+   시작 화면 버튼 크기 완전 통일
+================================ */
+
+.login-start-screen .login-bottom-area {
+    position: absolute !important;
+    left: 20px !important;
+    right: 20px !important;
+    bottom: 52px !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+}
+
+/* button, a 기본 스타일 차이 제거 */
+.login-start-screen .kakao-start-btn,
+.login-start-screen .phone-start-btn {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 52px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 8px !important;
+    box-sizing: border-box !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    letter-spacing: -0.05em !important;
+    text-decoration: none !important;
+    text-align: center !important;
+}
+
+/* 카카오 버튼 */
+.login-start-screen .kakao-start-btn {
+    border: 1.5px solid #ffdf00 !important;
+    background: #ffdf00 !important;
+    color: #111 !important;
+}
+
+/* 전화번호 버튼 */
+.login-start-screen .phone-start-btn {
+    border: 1.5px solid #1CBBDA !important;
+    background: #ffffff !important;
+    color: #1CBBDA !important;
+}
+
+/* 아이콘 위치도 동일 기준 */
+.login-start-screen .kakao-icon,
+.login-start-screen .phone-icon {
+    position: absolute !important;
+    left: 30px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+/* ===== step 6 disease ===== */
+
+.choice-card-wrap.disease-toggle {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 12px;
+  margin-bottom: 18px;
+}
+
+.choice-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 72px;
+  padding: 0 18px;
+  border: 1px solid #d9d9d9;
+  border-radius: 6px;
+  background: #fff;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.choice-card input {
+  display: none;
+}
+
+.choice-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: #111;
+  line-height: 1.4;
+}
+
+.choice-check {
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  background: #d9d9d9;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.choice-card:has(input:checked) {
+  background: #d8f3fb;
+  border-color: #b7e8f4;
+}
+
+.choice-card:has(input:checked) .choice-check {
+  background: #59c3e3;
+}
+
+/* 칩 나열 */
+.disease-chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 12px;
+  margin-top: 18px;
+}
+
+.disease-chip {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: #f1f1f1;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.disease-chip input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.disease-chip span {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1CBBDA;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.disease-chip:has(input:checked) {
+  background: #d8f3fb;
+}
+
+.direct-search-btn {
+  margin: 24px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 0;
+  background: transparent;
+  color: #7a7a7a;
+  font-size: 18px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.search-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+/* ================================
+   선택 카드 공통: 질병/수술/특이사항
+================================ */
+
+.choice-card-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.choice-card {
+    position: relative;
+    width: 100%;
+    min-height: 72px;
+    padding: 0 13px 0 18px;
+    border: 1px solid #d1d1d1;
+    border-radius: 4px;
+    background: #ffffff;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    cursor: pointer;
+}
+
+.choice-card input[type="radio"],
+.choice-card input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.choice-text {
+    font-size: 20px;
+    font-weight: 800;
+    line-height: 1.4;
+    letter-spacing: -0.05em;
+    color: #111111;
+}
+
+.choice-check {
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    background: #cfcfcf;
+    color: #ffffff;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 19px;
+    font-weight: 900;
+    flex-shrink: 0;
+}
+
+.choice-card:has(input:checked) {
+    background: #d4f5fa;
+    border-color: #96dce6;
+}
+
+.choice-card:has(input:checked) .choice-check {
+    background: #1CBBDA;
 }
