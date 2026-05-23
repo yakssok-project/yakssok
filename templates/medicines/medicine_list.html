@@ -74,8 +74,13 @@
       이 약들은 같은 성분이 들어있어 함께 복용하면 몸에 무리가 갈 수 있어요.
       복용 전에 한 번 더 확인해주세요.
     </p>
+    <div style="text-align:center; margin-bottom: 0.75rem;">
+      <button type="button" id="ddi-tts-btn" class="btn-tts" aria-label="설명 듣기">
+        🔊 듣기
+      </button>
+    </div>
+
     <div class="ddi-medicine-pair" id="ddi-medicine-pair"></div>
-    <div class="modal-actions">
       <a href="tel:1339" class="btn btn-outline" id="ddi-consult-btn">약사에게 문의하기</a>
       <button type="button" class="btn btn-primary" id="ddi-confirm-btn">확인</button>
     </div>
@@ -89,10 +94,10 @@
 <script src="{% static 'medicines/js/medicines.js' %}"></script>
 {% endif %}
 <script>
-document.getElementById('sort-select')?.addEventListener('change', function () {
-  const url = new URL(window.location.href);
-  url.searchParams.set('sort', this.value);
-  window.location.href = url.toString();
-});
+  document.getElementById('sort-select')?.addEventListener('change', function () {
+    const url = new URL(window.location.href);
+    url.searchParams.set('sort', this.value);
+    window.location.href = url.toString();
+  });
 </script>
 {% endblock %}

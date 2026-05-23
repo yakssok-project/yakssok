@@ -85,9 +85,8 @@
     function showMainModal(show) {
         overlay.hidden = !show;
         lockBodyScroll(show && detailOverlay.hidden);
-        if (show) {
-            confirmBtn.focus();
-        }
+        if (!show) stopTTS();
+        if (show) confirmBtn.focus();
     }
 
     function showWarning(index) {
@@ -128,6 +127,44 @@
             e.preventDefault();
         }
     });
+
+    /* ── TTS ── */
+    const ttsBtn = document.getElementById('ddi-tts-btn');
+
+    function stopTTS() {
+        if (window.speechSynthesis) {
+            window.speechSynthesis.cancel();
+        }
+        if (ttsBtn) ttsBtn.classList.remove('speaking');
+    }
+
+    if (ttsBtn) {
+        ttsBtn.addEventListener('click', function () {
+            if (!window.speechSynthesis) {
+                alert('이 브라우저는 음성 읽기를 지원하지 않습니다.');
+                return;
+            }
+
+            // 이미 읽는 중이면 중지
+            if (window.speechSynthesis.speaking) {
+                stopTTS();
+                return;
+            }
+
+            const text = noticeEl ? noticeEl.textContent.trim() : '';
+            if (!text) return;
+
+            const utter = new SpeechSynthesisUtterance(text);
+            utter.lang = 'ko-KR';
+            utter.rate = 0.95;
+
+            utter.onstart = () => ttsBtn.classList.add('speaking');
+            utter.onend = () => ttsBtn.classList.remove('speaking');
+            utter.onerror = () => ttsBtn.classList.remove('speaking');
+
+            window.speechSynthesis.speak(utter);
+        });
+    }
 
     showWarning(0);
 })();
