@@ -2,55 +2,105 @@
 
 {% block title %}회원가입 - 약쏙{% endblock %}
 
-{% block header_sub %}
-<p class="header-desc">회원가입 {{ step }} / {{ total_steps }}</p>
-{% endblock %}
+{% block header_sub %}{% endblock %}
 
 {% block content %}
-<section class="auth-card" aria-labelledby="signup-title">
-    <div class="progress-bar" role="progressbar" aria-valuenow="{{ step }}" aria-valuemin="1" aria-valuemax="{{ total_steps }}">
-        <div class="progress-fill" style="width: {% widthratio step total_steps 100 %}%;"></div>
+<section class="onboarding-page" aria-labelledby="signup-title">
+    <header class="onboarding-header">
+        {% if can_go_back %}
+        <a href="{% url 'signup' %}?step={{ prev_step }}" class="onboarding-back" aria-label="이전 단계">
+            ‹
+        </a>
+        {% else %}
+        <a href="{% url 'login' %}" class="onboarding-back" aria-label="뒤로가기">
+            ‹
+        </a>
+        {% endif %}
+
+        <h1 class="onboarding-title">회원가입</h1>
+    </header>
+
+    <div class="onboarding-progress" aria-label="회원가입 진행 단계">
+        {% for dot in progress_dots %}
+        <span class="progress-dot{% if dot == progress_step %} active{% endif %}"></span>
+        {% endfor %}
     </div>
 
-    <h2 id="signup-title" class="auth-title">{{ step_title }}</h2>
-
     {% if form.non_field_errors %}
-    <div class="error-box" role="alert">
+    <div class="onboarding-error" role="alert">
         {% for error in form.non_field_errors %}
         <p>{{ error }}</p>
         {% endfor %}
     </div>
     {% endif %}
 
-    <form method="post" class="auth-form" novalidate>
+    <form method="post" class="onboarding-form" novalidate>
         {% csrf_token %}
         <input type="hidden" name="step" value="{{ step }}">
-        {% for field in form %}
-        <div class="form-group{% if field.errors %} has-error{% endif %}">
-            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {{ field }}
-            {% if field.errors %}
-            <p class="field-error" role="alert">{{ field.errors.0 }}</p>
-            {% endif %}
-            {% if step == 6 and forloop.first %}
-            <p class="form-hint">해당하는 질병을 모두 선택해주세요. 없으면 다음을 눌러주세요.</p>
-            {% endif %}
-        </div>
-        {% endfor %}
 
-        <div class="form-actions">
-            {% if can_go_back %}
-            <a href="{% url 'signup' %}?step={{ prev_step }}" class="btn btn-secondary">이전</a>
-            {% endif %}
-            <button type="submit" class="btn btn-primary">
-                {% if step == total_steps %}가입 완료{% else %}다음{% endif %}
+        <main class="onboarding-content">
+            <h2 id="signup-title" class="onboarding-question">
+                {{ step_title|linebreaksbr }}
+            </h2>
+
+            {% for field in form %}
+            <div class="onboarding-field onboarding-field-step-{{ step }}{% if field.errors %} has-error{% endif %}">
+                
+                {% if step == 6 %}
+                    <div class="choice-card-wrap disease-toggle">
+                        <label class="choice-card">
+                            <input type="checkbox" class="none-disease-toggle">
+                            <span>갖고 있는 병이 없어요</span>
+                            <span class="choice-check">✓</span>
+                        </label>
+
+                        <label class="choice-card disease-has-card">
+                            <input type="checkbox" checked>
+                            <span>갖고 있는 병이 있어요</span>
+                            <span class="choice-check">✓</span>
+                        </label>
+                    </div>
+
+                    <div class="disease-chip-group">
+                        {% for checkbox in field %}
+                        <label class="disease-chip">
+                            {{ checkbox.tag }}
+                            <span>{{ checkbox.choice_label }}</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+
+                    <button type="button" class="direct-search-btn">
+                        <span class="search-icon">⌕</span>
+                        직접 검색할래요
+                    </button>
+                
+                {% elif step == 7 or step == 8 %}
+                    <div class="choice-card-wrap">
+                        {% for choice in field %}
+                        <label class="choice-card">
+                            {{ choice.tag }}
+                            <span class="choice-text">{{ choice.choice_label }}</span>
+                            <span class="choice-check">✓</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ field }}
+                {% endif %}
+
+                {% if field.errors %}
+                <p class="field-error" role="alert">{{ field.errors.0 }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </main>
+
+        <div class="onboarding-bottom">
+            <button type="submit" class="onboarding-next">
+                {% if step == total_steps %}가입 완료{% else %}다음단계{% endif %}
             </button>
         </div>
     </form>
-
-    <p class="auth-link">
-        이미 계정이 있으신가요?
-        <a href="{% url 'login' %}">로그인하기</a>
-    </p>
 </section>
 {% endblock %}

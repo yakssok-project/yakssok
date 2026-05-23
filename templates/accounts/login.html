@@ -1,43 +1,92 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}로그인 - 약쏙{% endblock %}
-
-{% block header_sub %}
-<p class="header-desc">로그인</p>
-{% endblock %}
+{% block header_sub %}{% endblock %}
 
 {% block content %}
-<section class="auth-card" aria-labelledby="login-title">
-    <h2 id="login-title" class="auth-title">로그인해주세요</h2>
+<section class="login-page">
+    <header class="login-header">
+        <div class="login-logo-wrap">
+            <img src="{% static 'medicines/img/logo.jpg' %}" alt="약쏙 로고" class="login-logo-img">
+            <span class="login-logo-text">약쏙</span>
+        </div>
 
-    {% if form.non_field_errors %}
-    <div class="error-box" role="alert">
-        {% for error in form.non_field_errors %}
-        <p>{{ error }}</p>
-        {% endfor %}
+        <button type="button" class="login-bell" aria-label="알림">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M18 8.5C18 6.9087 17.3679 5.38258 16.2426 4.25736C15.1174 3.13214 13.5913 2.5 12 2.5C10.4087 2.5 8.88258 3.13214 7.75736 4.25736C6.63214 5.38258 6 6.9087 6 8.5C6 15.5 3 17.5 3 17.5H21C21 17.5 18 15.5 18 8.5Z" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M13.73 21C13.5542 21.3031 13.3018 21.5547 12.9982 21.7295C12.6946 21.9044 12.3504 21.9965 12 21.9965C11.6496 21.9965 11.3054 21.9044 11.0018 21.7295C10.6982 21.5547 10.4458 21.3031 10.27 21" stroke="#111111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+    </header>
+
+    {% if request.GET.next %}
+    <!-- 전화번호 로그인 화면 -->
+    <div class="phone-login-screen">
+        <form method="post" class="phone-login-form">
+            {% csrf_token %}
+
+            <div class="login-input-group">
+                <label for="id_username">전화번호</label>
+                <input
+                    type="tel"
+                    name="username"
+                    id="id_username"
+                    placeholder="01012345678"
+                    autocomplete="tel"
+                    required
+                >
+            </div>
+
+            <div class="login-input-group">
+                <label for="id_password">PW</label>
+                <input
+                    type="password"
+                    name="password"
+                    id="id_password"
+                    placeholder="비밀번호를 입력해주세요"
+                    autocomplete="current-password"
+                    required
+                >
+            </div>
+
+            {% if form.non_field_errors %}
+            <div class="login-error">
+                {{ form.non_field_errors.0 }}
+            </div>
+            {% endif %}
+
+            <div class="login-bottom-area">
+                <a href="{% url 'signup' %}" class="signup-outline-btn">회원가입하기</a>
+                <button type="submit" class="login-main-btn">로그인</button>
+            </div>
+        </form>
+    </div>
+
+    {% else %}
+    <!-- 첫 시작 화면 -->
+    <div class="login-start-screen">
+        <h1 class="login-main-copy">
+            약사와 상담하고<br>
+            건강한 약 복용 시작하세요 :)
+        </h1>
+
+        <div class="login-bottom-area">
+            <button type="button" class="kakao-start-btn">
+                <span class="kakao-icon">TALK</span>
+                카카오로 간편시작
+            </button>
+
+            <a href="{% url 'login' %}?next=/" class="phone-start-btn">
+                <span class="phone-icon" aria-hidden="true">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                        <path d="M22 16.92V19.92C22.0011 20.1985 21.9441 20.4742 21.8325 20.7293C21.7209 20.9845 21.5573 21.2136 21.3521 21.4019C21.1468 21.5901 20.9046 21.7335 20.6407 21.8227C20.3769 21.9119 20.0974 21.9451 19.82 21.92C16.7428 21.5856 13.787 20.5341 11.19 18.85C8.77382 17.3147 6.72533 15.2662 5.19 12.85C3.49998 10.2412 2.44824 7.27099 2.12 4.18C2.09501 3.90347 2.12787 3.62476 2.2165 3.36162C2.30513 3.09849 2.44757 2.85669 2.63477 2.65162C2.82196 2.44655 3.04981 2.28271 3.30379 2.17052C3.55778 2.05833 3.83234 2.00026 4.11 2H7.11C7.59531 1.99522 8.06579 2.16708 8.43376 2.48353C8.80173 2.79999 9.04208 3.23945 9.11 3.72C9.23662 4.68007 9.47145 5.62273 9.81 6.53C9.94454 6.88792 9.97366 7.27691 9.89391 7.65088C9.81415 8.02485 9.62886 8.36811 9.36 8.64L8.09 9.91C9.51356 12.4135 11.5865 14.4864 14.09 15.91L15.36 14.64C15.6319 14.3711 15.9752 14.1858 16.3491 14.1061C16.7231 14.0263 17.1121 14.0555 17.47 14.19C18.3773 14.5286 19.3199 14.7634 20.28 14.89C20.7658 14.9585 21.2094 15.2032 21.5265 15.5775C21.8437 15.9518 22.0122 16.4296 22 16.92Z" stroke="#1CBBDA" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                전화번호로 시작하기
+            </a>
+        </div>
     </div>
     {% endif %}
-
-    <form method="post" class="auth-form" novalidate>
-        {% csrf_token %}
-        {% for field in form %}
-        <div class="form-group{% if field.errors %} has-error{% endif %}">
-            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
-            {{ field }}
-            {% if field.errors %}
-            <p class="field-error" role="alert">{{ field.errors.0 }}</p>
-            {% endif %}
-        </div>
-        {% endfor %}
-
-        <div class="form-actions">
-            <button type="submit" class="btn btn-primary btn-full">로그인</button>
-        </div>
-    </form>
-
-    <p class="auth-link">
-        처음이신가요?
-        <a href="{% url 'signup' %}">회원가입하기</a>
-    </p>
 </section>
 {% endblock %}
