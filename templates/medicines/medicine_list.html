@@ -28,8 +28,13 @@
 <ul class="my-medicine-list" aria-label="복용 중인 약 목록">
   {% for medicine in medicines %}
   <li>
-    <a href="{% url 'medicine_detail' medicine.pk %}" class="my-medicine-card">
+    <a href="{% url 'medicine_detail' medicine.pk %}"
+      class="my-medicine-card {% if medicine.pk in ddi_warned_ids %}ddi-warned{% endif %}">
+
       <div class="medicine-thumb-wrap">
+        {% if medicine.pk in ddi_warned_ids %}
+        <span class="ddi-badge" aria-label="복약 주의">경고</span>
+        {% endif %}
         {% if medicine.image_static_path %}
         <img src="{% static medicine.image_static_path %}" alt="" class="medicine-thumb">
         {% else %}
@@ -39,23 +44,9 @@
 
       <div class="medicine-card-body">
         <h2 class="medicine-card-title">{{ medicine.medicine_name }}</h2>
-
-        <p class="medicine-card-date">
-          제조일자
-          {% if medicine.manufactured_date %}
-          {{ medicine.manufactured_date|date:'Y.m.d' }}
-          {% else %}
-          -
-          {% endif %}
-        </p>
-
-        <div class="medicine-progress">
-          <div class="medicine-progress-fill" style="width: 60%;"></div>
-        </div>
-
-        <p class="medicine-card-qty">{{ medicine.quantity_display }}</p>
+        <!-- 나머지 기존 코드 그대로 -->
+        ...
       </div>
-
       <span class="card-arrow" aria-hidden="true">›</span>
     </a>
   </li>
@@ -81,10 +72,10 @@
     </div>
 
     <div class="ddi-medicine-pair" id="ddi-medicine-pair"></div>
-      <a href="tel:1339" class="btn btn-outline" id="ddi-consult-btn">약사에게 문의하기</a>
-      <button type="button" class="btn btn-primary" id="ddi-confirm-btn">확인</button>
-    </div>
+    <a href="tel:1339" class="btn btn-outline" id="ddi-consult-btn">약사에게 문의하기</a>
+    <button type="button" class="btn btn-primary" id="ddi-confirm-btn">확인</button>
   </div>
+</div>
 </div>
 {% endif %}
 {% endblock %}

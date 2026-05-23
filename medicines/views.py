@@ -88,6 +88,10 @@ def medicine_list_view(request):
             "reason": original_reason,
             "easy_reason": easy_reason,
         })
+        ddi_warned_ids = set()
+    for w in ddi_warnings:
+        ddi_warned_ids.add(w["medicine_1"].pk)
+        ddi_warned_ids.add(w["medicine_2"].pk)
 
     print("DDI warnings json:", warnings_for_js)
     print("DDI warnings:", ddi_warnings)
@@ -103,6 +107,7 @@ def medicine_list_view(request):
         'ddi_warnings': ddi_warnings,
         'ddi_warnings_json': warnings_for_js,
         'has_ddi_warning': bool(ddi_warnings),
+        'ddi_warned_ids': ddi_warned_ids,
         'nav_active': 'medicines',
     }
     return render(request, 'medicines/medicine_list.html', context)

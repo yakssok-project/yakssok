@@ -489,3 +489,32 @@ body.medicine-list-page .app-main::-webkit-scrollbar {
   color: var(--color-danger);
   border-color: var(--color-danger);
 }
+
+/* ── DDI 경고 카드 강조 ── */
+
+/* 카드 테두리를 빨간색으로 */
+.my-medicine-card.ddi-warned {
+  border-color: var(--color-danger, #e53e3e);
+  box-shadow: 0 2px 12px rgba(229, 62, 62, 0.18);
+}
+
+/* 썸네일 영역 — 상대 위치(뱃지 기준점) */
+.medicine-thumb-wrap {
+  position: relative;
+}
+
+/* 경고 뱃지 */
+.ddi-badge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #fff;
+  background: #f97316;   /* 주황 */
+  border-radius: 6px 0 6px 0;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
