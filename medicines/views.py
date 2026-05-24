@@ -69,6 +69,7 @@ def medicine_list_view(request):
     ddi_warnings = find_ddi_warnings(all_user_medicines)
 
     warnings_for_js = []
+    ddi_warned_ids = set()
 
     for w in ddi_warnings:
         original_reason = w["reason"]
@@ -88,7 +89,6 @@ def medicine_list_view(request):
             "reason": original_reason,
             "easy_reason": easy_reason,
         })
-        ddi_warned_ids = set()
     for w in ddi_warnings:
         ddi_warned_ids.add(w["medicine_1"].pk)
         ddi_warned_ids.add(w["medicine_2"].pk)
