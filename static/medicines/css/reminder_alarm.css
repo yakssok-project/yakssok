@@ -1,0 +1,363 @@
+/* ==============================
+   공통 복약 알림 오버레이
+   app-shell 안에서만 덮이도록 설정
+============================== */
+
+.app-shell {
+  position: relative;
+  overflow: hidden;
+}
+
+.yakssok-alarm-overlay {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  z-index: 9999;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0.58) 0%,
+      rgba(0, 0, 0, 0.52) 58%,
+      rgba(37, 204, 135, 0.35) 100%
+    );
+
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.yakssok-alarm-overlay[hidden] {
+  display: none;
+}
+
+.yakssok-alarm-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* 알람 시간 */
+.yakssok-alarm-time {
+  position: absolute;
+  top: 52px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  display: block;
+  margin: 0;
+
+  color: #ffffff;
+  text-align: center;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-size: 40px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: -2px;
+}
+
+/* 고정 멘트 */
+.yakssok-alarm-message {
+  position: absolute;
+  top: 112px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 320px;
+  margin: 0;
+
+  color: #ffffff;
+  text-align: center;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-size: 28px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: -1.4px;
+}
+
+/* 알림 카드 리스트 */
+.yakssok-alarm-card-list {
+  position: absolute;
+  top: 169px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 344px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* 카드는 기본 3개만 노출 */
+.yakssok-alarm-card {
+  position: relative;
+
+  width: 344px;
+  height: 138px;
+
+  border-radius: 10px;
+  border: 0.4px solid #cccccc;
+  background: #ffffff;
+  box-shadow: 2px 2px 4px 0 rgba(204, 204, 204, 0.15);
+  box-sizing: border-box;
+
+  overflow: hidden;
+}
+
+.yakssok-alarm-card.is-hidden {
+  display: none;
+}
+
+/* 약 이미지 */
+.alarm-card-thumb {
+  position: absolute;
+  top: 12px;
+  left: 15px;
+
+  width: 64px;
+  height: 64px;
+
+  border-radius: 4px;
+  background: #d9d9d9;
+}
+
+/* 카드 본문 */
+.alarm-card-body {
+  position: absolute;
+  top: 12px;
+  left: 91px;
+  right: 42px;
+}
+
+.alarm-card-label-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+}
+
+.alarm-card-label {
+  width: 59px;
+  height: 20px;
+  padding: 2px 8px;
+  box-sizing: border-box;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  color: #ffffff;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.label-prescription {
+  background: #1cbbda;
+}
+
+.alarm-card-name {
+  margin: 8px 0 0;
+
+  color: #444444;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: -1px;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.alarm-card-progress {
+  width: 216px;
+  height: 6px;
+  margin-top: 6px;
+
+  border-radius: 999px;
+  background: #f4f4f4;
+  overflow: hidden;
+}
+
+.alarm-card-progress-fill {
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #25cc87 0%, #1cbbda 100%);
+}
+
+/* 카드 오른쪽 화살표 */
+.alarm-card-arrow {
+  position: absolute;
+  top: 52px;
+  left: 312px;
+
+  width: 24px;
+  height: 24px;
+
+  border: 0;
+  background: transparent;
+  padding: 0;
+
+  color: #999999;
+  font-size: 44px;
+  line-height: 18px;
+  font-weight: 300;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  cursor: pointer;
+}
+
+/* 복용 버튼 */
+.alarm-card-action-row {
+  position: absolute;
+  left: 15px;
+  right: 15px;
+  bottom: 15px;
+
+  display: flex;
+  gap: 12px;
+}
+
+.alarm-card-dose-btn {
+  width: 150px;
+  height: 40px;
+
+  border: 0;
+  border-radius: 10px;
+  background: #f4f4f4;
+
+  color: #444444;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  cursor: pointer;
+}
+
+/* 모두 복용했어요 */
+.yakssok-alarm-all-btn {
+  position: absolute;
+  top: 629px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 316px;
+  min-height: 63px;
+  padding: 15px 80px;
+  box-sizing: border-box;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  border: 0;
+  border-radius: 100px;
+  background: linear-gradient(180deg, #1cbbda 0%, #25cc87 100%);
+
+  color: #ffffff;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-size: 24px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  letter-spacing: -1.2px;
+
+  cursor: pointer;
+}
+
+/* 15분 후 다시 알림 */
+.yakssok-alarm-snooze-btn {
+  position: absolute;
+  top: 720px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: 316px;
+  min-height: 55px;
+  padding: 15px 80px;
+  box-sizing: border-box;
+
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+
+  border: 0;
+  border-radius: 100px;
+  background: #999999;
+
+  color: #ffffff;
+  font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: normal;
+  letter-spacing: -1.2px;
+
+  cursor: pointer;
+}
+/* ==============================
+   알림 카드 사라짐/등장 애니메이션
+============================== */
+
+.yakssok-alarm-card {
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease,
+    height 0.25s ease;
+}
+
+/* 사라지는 카드 */
+.yakssok-alarm-card.is-exiting {
+  animation: alarmCardExit 0.28s ease forwards;
+  pointer-events: none;
+}
+
+/* 새로 올라오는 카드 */
+.yakssok-alarm-card.is-entering {
+  animation: alarmCardEnter 0.24s ease forwards;
+}
+
+@keyframes alarmCardExit {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    height: 138px;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.96);
+    height: 0;
+    margin-bottom: -10px;
+  }
+}
+
+@keyframes alarmCardEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

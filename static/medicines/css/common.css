@@ -52,7 +52,8 @@ body.app-page {
   z-index: 10;
   height: var(--header-height);
   background: #fff;
-  border-bottom: 1px solid var(--color-border);
+  /* border-bottom: 1px solid var(--color-border); */
+  /* 헤더부분 테두리 필요없어서 끌게요 */
 }
 
 .header-back {

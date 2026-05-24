@@ -1,0 +1,201 @@
+{% extends 'medicines/base_app.html' %}
+{% load static %}
+
+{% block title %}복약 관리 - 약쏙{% endblock %}
+{% block body_class %}medication-reminder-page{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'medicines/css/home.css' %}" />
+<link rel="stylesheet" href="{% static 'medicines/css/reminder.css' %}" />
+{% endblock %}
+
+{% block header %}
+<header class="reminder-header">
+  <a href="{% url 'home' %}" class="reminder-brand" aria-label="홈으로 이동">
+    <img
+      src="{% static 'medicines/img/logo.svg' %}"
+      alt=""
+      class="reminder-logo"
+    />
+    <img
+      src="{% static 'medicines/img/yakssok.svg' %}"
+      alt="약쏙"
+      class="reminder-logo-text"
+    />
+  </a>
+
+  <a href="{% url 'home' %}" class="reminder-logout" aria-label="나가기">
+    <img
+      src="{% static 'medicines/img/log-out.svg' %}"
+      alt=""
+      class="reminder-logout-icon"
+    />
+  </a>
+</header>
+{% endblock %}
+
+{% block content %}
+<section class="reminder-page">
+  <div class="reminder-scroll-area">
+
+    <div class="reminder-title-box">
+      <h2 class="reminder-title">약 / 영양제 복용기록</h2>
+    </div>
+
+    <!-- 달력 카드 -->
+    <section
+      class="reminder-calendar"
+      aria-label="복약 날짜 선택"
+    >
+      <div class="reminder-calendar-month-row">
+        <button
+          type="button"
+          class="calendar-nav-btn"
+          id="calendarPrevBtn"
+          aria-label="이전 주차"
+        >
+          <img
+            src="{% static 'medicines/img/chevron-left.svg' %}"
+            alt=""
+            class="calendar-nav-icon"
+          />
+        </button>
+
+        <div class="calendar-current">
+          <strong id="calendarMonth">6월</strong>
+          <span id="calendarWeekLabel">1주차</span>
+        </div>
+
+        <button
+          type="button"
+          class="calendar-nav-btn"
+          id="calendarNextBtn"
+          aria-label="다음 주차"
+        >
+          <img
+            src="{% static 'medicines/img/chevron-right.svg' %}"
+            alt=""
+            class="calendar-nav-icon"
+          />
+        </button>
+      </div>
+
+      <div class="reminder-week" id="calendarWeek">
+        <!-- JS에서 자동 생성됨 -->
+      </div>
+    </section>
+
+    <!-- 선택한 날짜 표시 바: 스크롤 시 상단 고정 -->
+    <section class="selected-date-bar" id="selectedDateBar">
+      <div class="selected-date-text">
+        <strong id="selectedMonthDay">6월 11일</strong>
+        <span id="selectedYear">2026</span>
+      </div>
+    </section>
+
+    <!-- 선택한 날짜의 복약 리스트 -->
+    <section class="reminder-medication-list" aria-label="선택한 날짜의 복약 알림 목록">
+      {% if has_medication_groups %}
+        {% for group in medication_groups %}
+          <section class="reminder-time-group">
+            <h3 class="reminder-time-title">
+              {{ group.time }} | {{ group.timing }}
+            </h3>
+
+            <div class="reminder-card-list">
+              {% for medicine in group.medicines %}
+                <article class="reminder-medicine-card{% if medicine.is_warning %} is-warning{% endif %}">
+                  <div class="reminder-medicine-img-wrap">
+                    <img
+                      src="{% static medicine.image_static_path %}"
+                      alt="{{ medicine.name }} 약 이미지"
+                      class="reminder-medicine-img"
+                    />
+                  </div>
+
+                  <div class="reminder-medicine-info">
+                    <div class="reminder-label-row">
+                      {% if medicine.is_warning %}
+                        <span class="reminder-label label-warning">경고</span>
+                      {% endif %}
+                      <span class="reminder-label label-prescription">처방약</span>
+                    </div>
+
+                    <h4 class="reminder-medicine-name">
+                      {{ medicine.name }}
+                    </h4>
+
+                    <div class="reminder-progress">
+                      <div
+                        class="reminder-progress-fill"
+                        style="width: {{ medicine.progress|default:0 }}%;"
+                      ></div>
+                    </div>
+                  </div>
+
+                  <a
+                    href="{% url 'medicine_detail' medicine.pk %}"
+                    class="reminder-card-arrow"
+                    aria-label="{{ medicine.name }} 상세보기"
+                  >
+                    <svg
+                      class="reminder-card-arrow-icon"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M9 18L15 12L9 6"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                      />
+                    </svg>
+                  </a>
+
+                  <div class="reminder-action-row">
+                    <button
+                      type="button"
+                      class="reminder-dose-btn"
+                      data-dose-status="taken"
+                    >
+                      <img
+                        src="{% static 'medicines/img/check.svg' %}"
+                        alt=""
+                        class="dose-check-icon"
+                      />
+                      <span>복용함</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      class="reminder-dose-btn"
+                      data-dose-status="skipped"
+                    >
+                      <img
+                        src="{% static 'medicines/img/check.svg' %}"
+                        alt=""
+                        class="dose-check-icon"
+                      />
+                      <span>복용안함</span>
+                    </button>
+                  </div>
+                </article>
+              {% endfor %}
+            </div>
+          </section>
+        {% endfor %}
+      {% else %}
+        <p class="reminder-empty-message">선택한 날짜에 등록된 복약 알림이 없습니다.</p>
+      {% endif %}
+    </section>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'medicines/js/reminder.js' %}"></script>
+{% endblock %}

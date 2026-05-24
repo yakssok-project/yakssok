@@ -120,6 +120,72 @@ def medicine_detail_view(request, pk):
     }
     return render(request, 'medicines/medicine_detail.html', context)
 
+@login_required
+def medication_reminder_view(request):
+    """복약 관리 / 약 영양제 복용기록 화면."""
+
+    active_medicines = _active_medicines(request.user).filter(alarm_enabled=True)
+
+    ddi_warnings = find_ddi_warnings(list(active_medicines))
+    warning_medicine_ids = set()
+
+    for warning in ddi_warnings:
+        warning_medicine_ids.add(warning["medicine_1"].pk)
+        warning_medicine_ids.add(warning["medicine_2"].pk)
+
+    grouped = {}
+
+    def format_time(time_text):
+        """09:00 -> 오전 9:00 형식으로 변환"""
+        try:
+            hour, minute = time_text.split(":")
+            hour = int(hour)
+            period = "오전" if hour < 12 else "오후"
+            display_hour = hour if hour <= 12 else hour - 12
+            if display_hour == 0:
+                display_hour = 12
+            return f"{period} {display_hour}:{minute}"
+        except Exception:
+            return time_text
+
+    for medicine in active_medicines:
+        intake_times = [t.strip() for t in medicine.intake_time.split(",") if t.strip()]
+
+        for intake_time in intake_times:
+            if intake_time not in grouped:
+                grouped[intake_time] = {
+                    "time": format_time(intake_time),
+                    "timing": "식후", # 임시..
+                    "medicines": [],
+                }
+
+            if medicine.total_quantity:
+                taken_quantity = medicine.total_quantity - medicine.remaining_quantity
+                progress = int((taken_quantity / medicine.total_quantity) * 100)
+            else:
+                progress = 0
+
+            grouped[intake_time]["medicines"].append({
+                "pk": medicine.pk,
+                "name": medicine.medicine_name,
+                "image_static_path": medicine.image_static_path,
+                "progress": progress,
+                "is_warning": medicine.pk in warning_medicine_ids,
+            })
+
+    medication_groups = [
+        grouped[key] for key in sorted(grouped.keys())
+    ]
+
+    context = {
+        "user": request.user,
+        "nav_active": "reminder",
+        "medication_groups": medication_groups,
+        "has_medication_groups": bool(medication_groups),
+    }
+
+    return render(request, "medicines/medication_reminder.html", context)
+
 def prescription_upload(request):
     if request.method == "POST":
         image_file = request.FILES.get("prescription_image")

@@ -8,21 +8,28 @@
 {% endblock %}
 
 {% block header %}
-<div class="home-topbar">
-  <div class="home-brand">
+<header class="shared-page-header">
+  <a href="{% url 'home' %}" class="shared-page-brand" aria-label="홈으로 이동">
     <img
-      src="{% static 'medicines/img/logo.jpg' %}"
-      alt="약쏙"
-      class="home-logo-img"
+      src="{% static 'medicines/img/logo.svg' %}"
+      alt=""
+      class="shared-page-logo"
     />
-    <span class="home-logo-texgit branch
-t">약쏙</span>
-  </div>
+    <img
+      src="{% static 'medicines/img/yakssok.svg' %}"
+      alt="약쏙"
+      class="shared-page-logo-text"
+    />
+  </a>
 
-  <button type="button" class="home-bell" aria-label="알림">
-    <i data-lucide="bell"></i>
-  </button>
-</div>
+  <a href="{% url 'home' %}" class="shared-page-exit" aria-label="나가기">
+    <img
+      src="{% static 'medicines/img/log-out.svg' %}"
+      alt=""
+      class="shared-page-exit-icon"
+    />
+  </a>
+</header>
 {% endblock %}
 
 {% block content %}

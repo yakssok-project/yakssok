@@ -1,0 +1,610 @@
+/* ==============================
+   복약 관리 화면 상단 헤더
+============================== */
+
+body.medication-reminder-page {
+    overflow: hidden;
+  }
+  
+  .medication-reminder-page .reminder-header {
+    position: relative;
+    width: 100%;
+    height: 96px;
+    background: #ffffff;
+  }
+  
+  .medication-reminder-page .reminder-brand {
+    position: absolute;
+    left: 24px;
+    top: 59px;
+    display: flex;
+    align-items: center;
+    gap: 5.8px;
+    text-decoration: none;
+  }
+  
+  .medication-reminder-page .reminder-logo {
+    width: 36px;
+    height: 28.486px;
+    display: block;
+  }
+  
+  .medication-reminder-page .reminder-logo-text {
+    width: 40.055px;
+    height: 21.328px;
+    display: block;
+  }
+  
+  .medication-reminder-page .reminder-logout {
+    position: absolute;
+    top: 61px;
+    right: 26px;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .medication-reminder-page .reminder-logout-icon {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+  
+  /* ==============================
+     전체 레이아웃
+     헤더와 네비바는 그대로 고정
+     콘텐츠 영역만 내부 스크롤
+  ============================== */
+  
+  .medication-reminder-page .reminder-page {
+    width: 361px;
+    height: calc(100dvh - 96px - 103px);
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #ffffff;
+    box-sizing: border-box;
+  }
+  
+  /* 실제 스크롤 영역 */
+  .medication-reminder-page .reminder-scroll-area {
+    position: relative;
+    flex: 1 1 auto;
+    width: 361px;
+  
+    overflow-y: auto;
+    overflow-x: hidden;
+  
+    /* 네비바에 가리지 않도록 스크롤 여백 확보 */
+    padding-bottom: 180px;
+  
+    box-sizing: border-box;
+    -webkit-overflow-scrolling: touch;
+  
+    /* Firefox 스크롤바 숨김 */
+    scrollbar-width: none;
+  
+    /* IE/Edge 구버전 스크롤바 숨김 */
+    -ms-overflow-style: none;
+  }
+  
+  /* Chrome, Safari 스크롤바 숨김 */
+  .medication-reminder-page .reminder-scroll-area::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .medication-reminder-page .reminder-scroll-area::before {
+    display: none;
+  }
+  
+  /* ==============================
+     제목 영역
+     이제 스크롤 영역 안에 있으므로 고정되지 않음
+  ============================== */
+  
+  .medication-reminder-page .reminder-title-box {
+    width: 353px;
+    height: 59px;
+    margin-left: 4px;
+    display: flex;
+    align-items: center;
+    padding: 16px 0 14px;
+    box-sizing: border-box;
+    background: #ffffff;
+  }
+  
+  .medication-reminder-page .reminder-title {
+    margin: 0;
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0;
+    color: #000000;
+    white-space: nowrap;
+  }
+  
+  /* ==============================
+     달력 카드
+  ============================== */
+  
+  .medication-reminder-page .reminder-calendar {
+    position: relative;
+    z-index: 2;
+    width: 353px;
+    height: 120px;
+    margin: 16px 0 0 4px;
+    border-radius: 15px;
+    border: 1px solid #1CBBDA;
+    background: #ffffff;
+    box-shadow: 2px 2px 4px 0 rgba(204, 204, 204, 0.15);
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  
+  .medication-reminder-page .calendar-nav-icon {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+  
+  .medication-reminder-page .reminder-calendar-month-row {
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 47px;
+  }
+  
+  .medication-reminder-page .calendar-nav-btn {
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    outline: none;
+    background: transparent;
+    appearance: none;
+    -webkit-appearance: none;
+    color: #222222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  
+  .medication-reminder-page .calendar-current {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 13px;
+    min-width: 104px;
+  }
+  
+  .medication-reminder-page .calendar-current strong {
+    color: #222222;
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 125%;
+    letter-spacing: 0.2px;
+  }
+  
+  .medication-reminder-page .calendar-current span {
+    color: #222222;
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 125%;
+    letter-spacing: 0.14px;
+  }
+  
+  .medication-reminder-page .reminder-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    padding: 0 20px;
+    box-sizing: border-box;
+  }
+  
+  .medication-reminder-page .calendar-day {
+    min-width: 0;
+    height: 66px;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .medication-reminder-page .calendar-weekday {
+    margin-bottom: 4px;
+    color: #888888;
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: -0.7px;
+  }
+  
+  .medication-reminder-page .calendar-date {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    box-sizing: border-box;
+  
+    color: #222222;
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    text-align: center;
+  }
+  
+  .medication-reminder-page .calendar-day.is-sunday .calendar-weekday,
+  .medication-reminder-page .calendar-day.is-sunday .calendar-date {
+    color: #D60000;
+  }
+  
+  .medication-reminder-page .calendar-day.is-saturday .calendar-weekday,
+  .medication-reminder-page .calendar-day.is-saturday .calendar-date {
+    color: #2E49E7;
+  }
+  
+  .medication-reminder-page .calendar-day.is-today .calendar-date {
+    border-color: #1CBBDA;
+    background: #ffffff;
+  }
+  
+  .medication-reminder-page .calendar-day.is-selected .calendar-date {
+    border-color: #1CBBDA;
+    background: #1CBBDA;
+    color: #ffffff;
+  }
+  
+  /* ==============================
+     선택한 날짜 표시 바
+     스크롤하다가 위로 올라오면 상단에 고정
+  ============================== */
+  
+  .medication-reminder-page .selected-date-bar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  
+    width: 353px;
+    min-height: 41px;
+    margin: 8px 0 0 4px;
+    padding: 8px 20px;
+    box-sizing: border-box;
+  
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 10px;
+  
+    border-radius: 0 10px 10px 0;
+    background: #25CC87;
+  }
+  
+  .medication-reminder-page .selected-date-bar[hidden] {
+    display: none;
+  }
+  
+  .medication-reminder-page .selected-date-text {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  
+  .medication-reminder-page .selected-date-text strong {
+    color: #F4F4F4;
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: 125%;
+    letter-spacing: 0.2px;
+  }
+  
+  .medication-reminder-page .selected-date-text span {
+    color: #F4F4F4;
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 125%;
+    letter-spacing: 0.14px;
+  }
+  
+  /* ==============================
+     복약 리스트 / 타임라인
+  ============================== */
+  
+  .medication-reminder-page .reminder-medication-list {
+    position: relative;
+    z-index: 2;
+  
+    width: 361px;
+    margin: 16px 0 0;
+    padding-bottom: 20px;
+    box-sizing: border-box;
+    overflow: visible;
+  }
+  
+  /* 복약 카드가 있는 만큼 이어지는 세로선 */
+  .medication-reminder-page .reminder-medication-list::before {
+    content: "";
+    position: absolute;
+  
+    left: 4px;
+    top: -57px;
+    bottom: 4px;
+  
+    width: 1px;
+    background: #25CC87;
+    z-index: 1;
+    pointer-events: none;
+  }
+  
+  /* 타임라인 끝나는 지점의 원 */
+  .medication-reminder-page .reminder-medication-list::after {
+    content: "";
+    position: absolute;
+  
+    left: 0;
+    bottom: 0;
+  
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid #25CC87;
+    background: #ffffff;
+    box-sizing: border-box;
+    z-index: 3;
+  }
+  
+  .medication-reminder-page .reminder-time-group {
+    position: relative;
+    z-index: 2;
+  }
+  
+  .medication-reminder-page .reminder-time-group + .reminder-time-group {
+    margin-top: 24px;
+  }
+  
+  /* 시간대 옆 동그라미 */
+  .medication-reminder-page .reminder-time-group::before {
+    content: "";
+    position: absolute;
+  
+    left: 0;
+    top: 7px;
+  
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1px solid #25CC87;
+    background: #ffffff;
+    box-sizing: border-box;
+    z-index: 3;
+  }
+  
+  .medication-reminder-page .reminder-time-title {
+    margin: 0 0 8px 24px;
+  
+    color: #444444;
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 16px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+  }
+  
+  .medication-reminder-page .reminder-card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-left: 15px;
+  }
+  
+  /* ==============================
+     복약 카드
+  ============================== */
+  
+  .medication-reminder-page .reminder-medicine-card {
+    position: relative;
+    width: 342px;
+    height: 138px;
+    border-radius: 10px;
+    border: 0.4px solid #CCCCCC;
+    background: #FFFFFF;
+    box-shadow: 2px 2px 4px 0 rgba(204, 204, 204, 0.15);
+    box-sizing: border-box;
+  }
+  
+  .medication-reminder-page .reminder-medicine-card.is-warning {
+    border-color: #D4480F;
+  }
+  
+  .medication-reminder-page .reminder-medicine-img-wrap {
+    position: absolute;
+    top: 12px;
+    left: 15px;
+    width: 64px;
+    height: 64px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #D9D9D9;
+  }
+  
+  .medication-reminder-page .reminder-medicine-img {
+    width: 64px;
+    height: 64px;
+    display: block;
+    object-fit: cover;
+  }
+  
+  .medication-reminder-page .reminder-medicine-info {
+    position: absolute;
+    top: 12px;
+    left: 91px;
+    right: 42px;
+  }
+  
+  .medication-reminder-page .reminder-label-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 20px;
+  }
+  
+  .medication-reminder-page .reminder-label {
+    width: 59px;
+    height: 20px;
+    padding: 2px 8px;
+    box-sizing: border-box;
+  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    color: #FFFFFF;
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  
+  .medication-reminder-page .label-warning {
+    background: #D4480F;
+  }
+  
+  .medication-reminder-page .label-prescription {
+    background: #1CBBDA;
+  }
+  
+  .medication-reminder-page .reminder-medicine-name {
+    margin: 8px 0 0;
+    color: #444444;
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: -1px;
+  
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  
+  .medication-reminder-page .reminder-progress {
+    width: 216px;
+    height: 6px;
+    margin-top: 6px;
+    border-radius: 999px;
+    background: #F4F4F4;
+    overflow: hidden;
+  }
+  
+  .medication-reminder-page .reminder-progress-fill {
+    height: 6px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #25CC87 0%, #1CBBDA 100%);
+  }
+  
+  .medication-reminder-page .reminder-card-arrow {
+    position: absolute;
+    top: 52px;
+    left: 312px;
+    width: 24px;
+    height: 24px;
+    color: #999999;
+  
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+  }
+  
+  .medication-reminder-page .reminder-card-arrow-icon {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+  
+  .medication-reminder-page .reminder-action-row {
+    position: absolute;
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+  
+    display: flex;
+    gap: 12px;
+  }
+  
+  .medication-reminder-page .reminder-dose-btn {
+    width: 150px;
+    height: 40px;
+    padding: 5px 0;
+    border: 0;
+    border-radius: 10px;
+    background: #F4F4F4;
+  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+  
+    color: #444444;
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.4px;
+    cursor: pointer;
+  }
+  
+  .medication-reminder-page .dose-check-icon {
+    width: 20px;
+    height: 20px;
+    display: none;
+  }
+  
+  .medication-reminder-page .reminder-dose-btn.is-taken {
+    width: 151px;
+    background: #1CBBDA;
+    color: #FFFFFF;
+  }
+  
+  .medication-reminder-page .reminder-dose-btn.is-taken .dose-check-icon {
+    display: block;
+  }
+  
+  .medication-reminder-page .reminder-dose-btn.is-skipped {
+    width: 151px;
+    background: #999999;
+    color: #FFFFFF;
+  }
+  
+  .medication-reminder-page .reminder-dose-btn.is-skipped .dose-check-icon {
+    display: block;
+  }
+  
+  .medication-reminder-page .reminder-empty-message {
+    margin: 24px 0 0;
+    color: #888888;
+    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 15px;
+    text-align: center;
+  }

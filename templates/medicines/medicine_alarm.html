@@ -1,0 +1,147 @@
+<!-- 공통 복약 알림 오버레이 -->
+<div class="yakssok-alarm-overlay" id="yakssokAlarmOverlay" hidden>
+    <div
+      class="yakssok-alarm-content"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="yakssokAlarmTime"
+    >
+      <strong class="yakssok-alarm-time" id="yakssokAlarmTime">
+        11:50
+      </strong>
+  
+      <p class="yakssok-alarm-message">
+        예정된 약을 복용하세요
+      </p>
+  
+      <section class="yakssok-alarm-card-list" id="yakssokAlarmCardList">
+        <!-- 알림 카드 1 -->
+        <article class="yakssok-alarm-card" data-alarm-card>
+          <div class="alarm-card-thumb"></div>
+  
+          <div class="alarm-card-body">
+            <div class="alarm-card-label-row">
+              <span class="alarm-card-label label-prescription">처방약</span>
+            </div>
+  
+            <h3 class="alarm-card-name">어쩌고 저쩌고 약</h3>
+  
+            <div class="alarm-card-progress">
+              <div class="alarm-card-progress-fill" style="width: 52%;"></div>
+            </div>
+          </div>
+  
+          <button type="button" class="alarm-card-arrow" aria-label="약 상세보기">
+            ›
+          </button>
+  
+          <div class="alarm-card-action-row">
+            <button type="button" class="alarm-card-dose-btn" data-alarm-action="taken">
+              복용함
+            </button>
+            <button type="button" class="alarm-card-dose-btn" data-alarm-action="skipped">
+              복용안함
+            </button>
+          </div>
+        </article>
+  
+        <!-- 알림 카드 2 -->
+        <article class="yakssok-alarm-card" data-alarm-card>
+          <div class="alarm-card-thumb"></div>
+  
+          <div class="alarm-card-body">
+            <div class="alarm-card-label-row">
+              <span class="alarm-card-label label-prescription">처방약</span>
+            </div>
+  
+            <h3 class="alarm-card-name">어쩌고 저쩌고 약</h3>
+  
+            <div class="alarm-card-progress">
+              <div class="alarm-card-progress-fill" style="width: 52%;"></div>
+            </div>
+          </div>
+  
+          <button type="button" class="alarm-card-arrow" aria-label="약 상세보기">
+            ›
+          </button>
+  
+          <div class="alarm-card-action-row">
+            <button type="button" class="alarm-card-dose-btn" data-alarm-action="taken">
+              복용함
+            </button>
+            <button type="button" class="alarm-card-dose-btn" data-alarm-action="skipped">
+              복용안함
+            </button>
+          </div>
+        </article>
+  
+        <!-- 알림 카드 3 -->
+        <article class="yakssok-alarm-card" data-alarm-card>
+          <div class="alarm-card-thumb"></div>
+  
+          <div class="alarm-card-body">
+            <div class="alarm-card-label-row">
+              <span class="alarm-card-label label-prescription">처방약</span>
+            </div>
+  
+            <h3 class="alarm-card-name">어쩌고 저쩌고 약</h3>
+  
+            <div class="alarm-card-progress">
+              <div class="alarm-card-progress-fill" style="width: 52%;"></div>
+            </div>
+          </div>
+  
+          <button type="button" class="alarm-card-arrow" aria-label="약 상세보기">
+            ›
+          </button>
+  
+          <div class="alarm-card-action-row">
+            <button type="button" class="alarm-card-dose-btn" data-alarm-action="taken">
+              복용함
+            </button>
+            <button type="button" class="alarm-card-dose-btn" data-alarm-action="skipped">
+              복용안함
+            </button>
+          </div>
+        </article>
+  
+        <!-- 테스트용 추가 카드: 약이 3개 이상일 때 다음 리스트가 올라오는지 확인용 -->
+        <article class="yakssok-alarm-card" data-alarm-card>
+          <div class="alarm-card-thumb"></div>
+  
+          <div class="alarm-card-body">
+            <div class="alarm-card-label-row">
+              <span class="alarm-card-label label-prescription">처방약</span>
+            </div>
+  
+            <h3 class="alarm-card-name">네 번째 약</h3>
+  
+            <div class="alarm-card-progress">
+              <div class="alarm-card-progress-fill" style="width: 40%;"></div>
+            </div>
+          </div>
+  
+          <button type="button" class="alarm-card-arrow" aria-label="약 상세보기">
+            ›
+          </button>
+  
+          <div class="alarm-card-action-row">
+            <button type="button" class="alarm-card-dose-btn" data-alarm-action="taken">
+              복용함
+            </button>
+            <button type="button" class="alarm-card-dose-btn" data-alarm-action="skipped">
+              복용안함
+            </button>
+          </div>
+        </article>
+      </section>
+  
+      <button type="button" class="yakssok-alarm-all-btn" id="yakssokAlarmAllTakenBtn">
+        모두 복용했어요
+      </button>
+  
+      <button type="button" class="yakssok-alarm-snooze-btn" id="yakssokAlarmSnoozeBtn">
+        15분 후 다시 알림
+      </button>
+    </div>
+  </div>

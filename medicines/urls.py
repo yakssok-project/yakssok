@@ -14,4 +14,5 @@ urlpatterns = [
     path("medicine/search-select/", views.medicine_search_select, name="medicine_search_select"),
     path("medicine/edit-temp/<int:index>/", views.medicine_edit_temp, name="medicine_edit_temp"),
     path("prescription/save/", views.prescription_save, name="prescription_save"),
+    path("reminder/", views.medication_reminder_view, name="medication_reminder"),
 ]
