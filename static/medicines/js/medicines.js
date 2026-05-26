@@ -1,12 +1,5 @@
 /**
  * DDI 위험 약 조합 경고 팝업 (medicine_list.html)
- * - 위험한 약 2개: 이름 + 이미지 + 간단 주의 문구
- * - 더 알아보기: 금기 사유(contraindication_reason) 상세
- * - 약사에게 문의하기: 전화 연결
- * - 확인: 다음 경고 표시 또는 팝업 종료
- */
-/**
- * DDI 위험 약 조합 경고 팝업 (medicine_list.html)
  */
 (function () {
   "use strict";
@@ -31,10 +24,7 @@
   const confirmBtn = document.getElementById("ddi-confirm-btn");
   const ttsBtn = document.getElementById("ddi-tts-btn");
 
-  if (!overlay || !pairEl || !noticeEl || !confirmBtn) {
-    console.error("DDI 팝업에 필요한 DOM 요소가 없습니다.");
-    return;
-  }
+  if (!overlay || !pairEl || !noticeEl || !confirmBtn) return;
 
   let currentIndex = 0;
   let bodyScrollLocked = false;
@@ -191,16 +181,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const selectedHourEl = document.getElementById("selected_hour");
   const selectedMinuteEl = document.getElementById("selected_minute");
-  const pickerBox = document.querySelector(".time-picker-box");
 
   if (!frequencyInput && !durationInput && !alarmToggle) return;
 
   let editingTimeIndex = null;
   let selectedHour = 9;
   let selectedMinute = 0;
-
-  let dragStartY = null;
-  let isDragging = false;
 
   const defaultTimes = ["09:00", "12:00", "18:00", "21:00"];
 
@@ -235,6 +221,11 @@ document.addEventListener("DOMContentLoaded", function () {
         alarmTimeList.innerHTML = "";
       }
     });
+
+    if (alarmToggle.checked) {
+      alarmTimeList.hidden = false;
+      renderAlarmTimes();
+    }
   }
 
   if (alarmTimeList) {
@@ -247,6 +238,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const timeInputs = alarmTimeList.querySelectorAll(
         'input[name="alarm_times"]'
       );
+
       const timeInput = timeInputs[editingTimeIndex];
       if (!timeInput) return;
 
@@ -263,68 +255,38 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  if (pickerBox) {
-    pickerBox.addEventListener("pointerdown", function (e) {
-      dragStartY = e.clientY;
-      isDragging = true;
-      pickerBox.setPointerCapture(e.pointerId);
-    });
+  document.querySelectorAll(".time-step-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const target = btn.dataset.timeTarget;
+      const delta = Number(btn.dataset.delta || 0);
 
-    pickerBox.addEventListener("pointermove", function (e) {
-      if (!isDragging || dragStartY === null) return;
-
-      const diff = dragStartY - e.clientY;
-
-      if (Math.abs(diff) < 28) return;
-
-      if (diff > 0) {
-        selectedHour = selectedHour === 23 ? 0 : selectedHour + 1;
-      } else {
-        selectedHour = selectedHour === 0 ? 23 : selectedHour - 1;
+      if (target === "hour") {
+        selectedHour = (selectedHour + delta + 24) % 24;
       }
 
-      dragStartY = e.clientY;
-      updateTimePicker();
-    });
-
-    pickerBox.addEventListener("pointerup", function () {
-      isDragging = false;
-      dragStartY = null;
-    });
-
-    pickerBox.addEventListener("pointercancel", function () {
-      isDragging = false;
-      dragStartY = null;
-    });
-  }
-
-  if (selectedMinuteEl) {
-    selectedMinuteEl.addEventListener("wheel", function (e) {
-      e.preventDefault();
-
-      if (e.deltaY < 0) {
-        selectedMinute = selectedMinute === 59 ? 0 : selectedMinute + 1;
-      } else {
-        selectedMinute = selectedMinute === 0 ? 59 : selectedMinute - 1;
+      if (target === "minute") {
+        selectedMinute = (selectedMinute + delta + 60) % 60;
       }
 
       updateTimePicker();
     });
-  }
+  });
 
-  if (selectedHourEl) {
-    selectedHourEl.addEventListener("wheel", function (e) {
-      e.preventDefault();
+  document.querySelectorAll(".period-btn").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      const period = btn.dataset.period;
 
-      if (e.deltaY < 0) {
-        selectedHour = selectedHour === 23 ? 0 : selectedHour + 1;
-      } else {
-        selectedHour = selectedHour === 0 ? 23 : selectedHour - 1;
+      if (period === "am" && selectedHour >= 12) {
+        selectedHour -= 12;
+      }
+
+      if (period === "pm" && selectedHour < 12) {
+        selectedHour += 12;
       }
 
       updateTimePicker();
     });
-  }
+  });
 
   if (timeSaveBtn) {
     timeSaveBtn.addEventListener("click", function () {
@@ -363,52 +325,38 @@ document.addEventListener("DOMContentLoaded", function () {
             <span>${i + 1}회차</span>
             <strong>${time}</strong>
           </div>
+
           <input type="hidden" name="alarm_times" value="${time}">
-          <button type="button" class="time-open-btn" data-index="${i}">›</button>
+
+          <button type="button" class="time-open-btn" data-index="${i}">
+            ›
+          </button>
         </div>
         `
       );
     }
   }
 
-  function periodLabel(hour) {
-    return hour < 12 ? "오전" : "오후";
+  function displayHour(hour) {
+    const h = hour % 12;
+    return h === 0 ? 12 : h;
   }
 
   function updateTimePicker() {
-    const prevHour = selectedHour === 0 ? 23 : selectedHour - 1;
-    const nextHour = selectedHour === 23 ? 0 : selectedHour + 1;
+    if (selectedHourEl) {
+      selectedHourEl.textContent = String(displayHour(selectedHour)).padStart(2, "0");
+    }
 
-    const prevMinute = selectedMinute === 0 ? 59 : selectedMinute - 1;
-    const nextMinute = selectedMinute === 59 ? 0 : selectedMinute + 1;
+    if (selectedMinuteEl) {
+      selectedMinuteEl.textContent = String(selectedMinute).padStart(2, "0");
+    }
 
-    document.getElementById("period_text").textContent =
-      periodLabel(selectedHour);
-
-    document.getElementById("selected_hour").textContent = String(
-      selectedHour
-    ).padStart(2, "0");
-
-    document.getElementById("selected_minute").textContent = String(
-      selectedMinute
-    ).padStart(2, "0");
-
-    document.getElementById("prev_hour").textContent = String(prevHour).padStart(
-      2,
-      "0"
-    );
-
-    document.getElementById("prev_minute").textContent = String(
-      prevMinute
-    ).padStart(2, "0");
-
-    document.getElementById("next_hour").textContent = String(nextHour).padStart(
-      2,
-      "0"
-    );
-
-    document.getElementById("next_minute").textContent = String(
-      nextMinute
-    ).padStart(2, "0");
+    document.querySelectorAll(".period-btn").forEach(function (btn) {
+      btn.classList.toggle(
+        "is-active",
+        (btn.dataset.period === "am" && selectedHour < 12) ||
+          (btn.dataset.period === "pm" && selectedHour >= 12)
+      );
+    });
   }
 });

@@ -16,6 +16,11 @@ from django.conf import settings
 
 from .models import UserMedicine
 
+from django.http import JsonResponse
+from django.utils import timezone
+from django.templatetags.static import static
+from .utils import parse_intake_times
+from django.urls import reverse
 
 SORT_MANUFACTURED = 'manufactured'
 SORT_REMAINING = 'remaining'
@@ -623,31 +628,67 @@ def prescription_medicine_edit(request, index):
 def medicine_edit_view(request, pk):
     medicine = get_object_or_404(UserMedicine, pk=pk, user=request.user)
 
-    if request.method == "POST":
-        form_data = _parse_medicine_form(request)
+    from_page = request.GET.get("from")
 
-        medicine.dose_per_day = form_data["dose_per_day"]
-        medicine.duration_days = form_data["duration_days"]
-        medicine.meal_timing = form_data["meal_timing"]
-        medicine.alarm_enabled = form_data["alarm_enabled"]
-        medicine.intake_time = form_data["intake_time"]
-        medicine.frequency = form_data["frequency"]
-        medicine.total_quantity = form_data["dose_per_day"] * form_data["duration_days"]
+    if from_page == "reminder":
+        back_url = reverse("medication_reminder")
+        nav_active = "reminder"
+        after_save_url = reverse("medication_reminder")
+    else:
+        back_url = reverse("medicine_list")
+        nav_active = "medicines"
+        after_save_url = reverse("medicine_list")
+
+    if request.method == "POST":
+        frequency = int(request.POST.get("frequency", medicine.dose_per_day or 1))
+        duration = int(request.POST.get("duration", medicine.duration_days or 1))
+        meal_timing = request.POST.get("meal_timing", "after")
+        alarm_enabled = request.POST.get("alarm_enabled") == "on"
+
+        alarm_times = request.POST.getlist("alarm_times")
+        alarm_times = [t for t in alarm_times if t]
+
+        if not alarm_times:
+            alarm_times = ["09:00"]
+
+        medicine.dose_per_day = frequency
+        medicine.duration_days = duration
+        medicine.frequency = f"하루 {frequency}번"
+        medicine.meal_timing = meal_timing
+        medicine.alarm_enabled = alarm_enabled
+        medicine.intake_time = ",".join(alarm_times)
+
+        medicine.total_quantity = frequency * duration
         medicine.remaining_quantity = min(
             medicine.remaining_quantity,
             medicine.total_quantity,
         )
+
         medicine.save()
 
-        return redirect("medicine_detail", pk=medicine.pk)
+        return redirect(after_save_url)
 
-    context = {
-        "mode": "edit",
-        "medicine": medicine,
-        "nav_active": "medicines",
+    med = {
+        "name": medicine.medicine_name,
+        "image": medicine.image_static_path,
+        "frequency": medicine.dose_per_day,
+        "duration": medicine.duration_days,
+        "meal_timing": medicine.meal_timing,
+        "alarm_enabled": medicine.alarm_enabled,
+        "alarm_times": [
+            t.strip() for t in medicine.intake_time.split(",") if t.strip()
+        ],
     }
 
-    return render(request, "medicines/medicine_edit_temp.html", context)
+    return render(request, "medicines/medicine_edit_temp.html", {
+        "med": med,
+        "medicine": medicine,
+        "mode": "edit",
+        "action_url": request.get_full_path(),
+        "delete_url": reverse("medicine_delete", args=[medicine.pk]),
+        "back_url": back_url,
+        "nav_active": nav_active,
+    })
 
 @login_required
 def medication_reminder_view(request):
@@ -696,3 +737,47 @@ def medication_reminder_view(request):
         "has_medication_groups": bool(medication_groups),
         "nav_active": "reminder",
     })
+
+@login_required
+def due_medicine_alarm_api(request):
+    now = timezone.localtime()
+    now_minutes = now.hour * 60 + now.minute
+
+    due_medicines = []
+
+    medicines = UserMedicine.objects.filter(
+        user=request.user,
+        is_active=True,
+        alarm_enabled=True,
+    )
+
+    for medicine in medicines:
+        for hour, minute in parse_intake_times(medicine.intake_time):
+            medicine_minutes = hour * 60 + minute
+
+            # 현재 시간과 복용 시간이 같으면 알림
+            if now_minutes == medicine_minutes:
+                due_medicines.append({
+                    "id": medicine.id,
+                    "name": medicine.medicine_name,
+                    "image": static(medicine.image_static_path),
+                    "time": f"{hour:02d}:{minute:02d}",
+                    "remaining_quantity": medicine.remaining_quantity,
+                    "total_quantity": medicine.total_quantity,
+                })
+                break
+
+    return JsonResponse({
+        "now": now.strftime("%H:%M"),
+        "medicines": due_medicines,
+    })
+
+@login_required
+def medicine_delete_view(request, pk):
+    medicine = get_object_or_404(UserMedicine, pk=pk, user=request.user)
+
+    if request.method == "POST":
+        medicine.delete()
+        return redirect("medicine_list")
+
+    return redirect("medicine_edit", pk=pk)
