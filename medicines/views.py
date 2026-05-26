@@ -476,6 +476,9 @@ def medicine_edit_temp(request, index):
     if request.method == "POST":
         med["frequency"] = request.POST.get("frequency", "1")
         med["duration"] = request.POST.get("duration", "1")
+        med["meal_timing"] = request.POST.get("meal_timing", "after")
+        med["alarm_enabled"] = request.POST.get("alarm_enabled") == "on"
+        med["alarm_times"] = request.POST.getlist("alarm_times")
 
         request.session["ocr_result"] = result
         request.session.modified = True
@@ -520,18 +523,176 @@ def prescription_save(request):
         frequency_int = int(frequency)
         duration_int = int(duration)
 
+        alarm_times = med.get("alarm_times") or ["09:00"]
+        alarm_enabled = med.get("alarm_enabled", True)
+
         UserMedicine.objects.create(
             user=request.user,
             medicine_name=med.get("name", ""),
             ingredient_name=med.get("ingredient_name", ""),
-            intake_time="09:00",
+            intake_time=",".join(alarm_times),
             frequency=f"하루 {frequency_int}번",
+            dose_per_day=frequency_int,
+            duration_days=duration_int,
+            meal_timing=med.get("meal_timing", "after"),
             remaining_quantity=frequency_int * duration_int,
             total_quantity=frequency_int * duration_int,
-            alarm_enabled=True,
+            alarm_enabled=alarm_enabled,
             is_active=True,
         )
 
     request.session.pop("ocr_result", None)
 
     return redirect("medicine_list")
+
+
+def _make_default_times(count):
+    defaults = ["09:00", "12:00", "18:00", "21:00"]
+    return defaults[:count]
+
+
+def _parse_medicine_form(request):
+    dose_per_day = int(request.POST.get("dose_per_day", 1))
+    duration_days = int(request.POST.get("duration_days", 1))
+    meal_timing = request.POST.get("meal_timing", "after")
+    alarm_enabled = request.POST.get("alarm_enabled") == "on"
+
+    times = request.POST.getlist("alarm_times")
+    times = [t for t in times if t]
+
+    if not times:
+        times = _make_default_times(dose_per_day)
+
+    return {
+        "dose_per_day": dose_per_day,
+        "duration_days": duration_days,
+        "meal_timing": meal_timing,
+        "alarm_enabled": alarm_enabled,
+        "intake_time": ",".join(times),
+        "frequency": f"하루 {dose_per_day}회",
+    }
+
+
+@login_required
+def prescription_medicine_edit(request, index):
+    result = request.session.get("ocr_result")
+
+    if not result:
+        return redirect("prescription_upload")
+
+    medicines = result.get("medicines", [])
+
+    if index < 0 or index >= len(medicines):
+        return redirect("prescription_result")
+
+    med = medicines[index]
+
+    if request.method == "POST":
+        form_data = _parse_medicine_form(request)
+
+        UserMedicine.objects.create(
+            user=request.user,
+            medicine_name=med.get("name", ""),
+            ingredient_name=med.get("ingredient_name", ""),
+            image=med.get("image", UserMedicine.DEFAULT_IMAGE),
+            remaining_quantity=form_data["dose_per_day"] * form_data["duration_days"],
+            total_quantity=form_data["dose_per_day"] * form_data["duration_days"],
+            **form_data,
+        )
+
+        return redirect("medicine_list")
+
+    context = {
+        "mode": "create",
+        "medicine": {
+            "medicine_name": med.get("name", ""),
+            "image_static_path": med.get("image", UserMedicine.DEFAULT_IMAGE),
+            "dose_per_day": 3,
+            "duration_days": 5,
+            "meal_timing": "after",
+            "alarm_enabled": False,
+            "intake_times": ["09:00", "12:00", "18:00"],
+        },
+        "nav_active": "scan",
+    }
+
+    return render(request, "medicines/medicine_edit.html", context)
+
+
+@login_required
+def medicine_edit_view(request, pk):
+    medicine = get_object_or_404(UserMedicine, pk=pk, user=request.user)
+
+    if request.method == "POST":
+        form_data = _parse_medicine_form(request)
+
+        medicine.dose_per_day = form_data["dose_per_day"]
+        medicine.duration_days = form_data["duration_days"]
+        medicine.meal_timing = form_data["meal_timing"]
+        medicine.alarm_enabled = form_data["alarm_enabled"]
+        medicine.intake_time = form_data["intake_time"]
+        medicine.frequency = form_data["frequency"]
+        medicine.total_quantity = form_data["dose_per_day"] * form_data["duration_days"]
+        medicine.remaining_quantity = min(
+            medicine.remaining_quantity,
+            medicine.total_quantity,
+        )
+        medicine.save()
+
+        return redirect("medicine_detail", pk=medicine.pk)
+
+    context = {
+        "mode": "edit",
+        "medicine": medicine,
+        "nav_active": "medicines",
+    }
+
+    return render(request, "medicines/medicine_edit_temp.html", context)
+
+@login_required
+def medication_reminder_view(request):
+    medicines = UserMedicine.objects.filter(
+        user=request.user,
+        is_active=True,
+        alarm_enabled=True,
+    ).order_by("created_at")
+
+    groups = {}
+
+    for medicine in medicines:
+        times = [
+            t.strip()
+            for t in medicine.intake_time.split(",")
+            if t.strip()
+        ]
+
+        for time in times:
+            timing = "식후" if medicine.meal_timing == "after" else "식전"
+
+            key = (time, timing)
+
+            if key not in groups:
+                groups[key] = {
+                    "time": time,
+                    "timing": timing,
+                    "medicines": [],
+                }
+
+            groups[key]["medicines"].append({
+                "pk": medicine.pk,
+                "name": medicine.medicine_name,
+                "image_static_path": medicine.image_static_path,
+                "progress": medicine.remaining_ratio * 100,
+                "is_warning": False,
+            })
+
+    medication_groups = sorted(
+        groups.values(),
+        key=lambda group: group["time"]
+    )
+
+    return render(request, "medicines/medication_reminder.html", {
+        "medication_groups": medication_groups,
+        "has_medication_groups": bool(medication_groups),
+        "nav_active": "reminder",
+    })

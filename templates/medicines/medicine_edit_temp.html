@@ -4,59 +4,168 @@
 {% block title %}약 정보 수정 - 약쏙{% endblock %}
 {% block header_title %}약 추가하기{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'medicines/css/medicines.css' %}">
+{% endblock %}
+
 {% block content %}
 <section class="medicine-edit-page">
-  <div class="preview-steps">
-    <span></span>
-    <span></span>
-    <span class="active"></span>
-    <span></span>
-    <span></span>
-  </div>
-
-  <h2 class="ocr-result-title">약물 정보를 수정할게요</h2>
-
-  <form method="post" action="{% url 'medicine_edit_temp' index %}">
+  <form
+    method="post"
+    action="{% url 'medicine_edit_temp' index %}"
+    id="medicine_edit_form"
+  >
     {% csrf_token %}
 
+    <div class="preview-steps">
+      <span></span>
+      <span></span>
+      <span class="active"></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <h2 class="ocr-result-title">약물 정보를 수정할게요</h2>
+
     <div class="edit-medicine-card">
-      <div class="edit-medicine-image"></div>
+      <div class="edit-medicine-image">
+        <img
+          src="{% static med.image|default:'medicines/img/tylenol.jpg' %}"
+          alt="{{ med.name }}"
+        />
+      </div>
       <strong>{{ med.name }}</strong>
     </div>
 
     <div class="edit-row">
       <span>하루에</span>
-      <button type="button" class="count-btn" data-target="frequency" data-delta="-1">−</button>
-      <input type="number" name="frequency" id="frequency" value="{{ med.frequency|default:1 }}" min="1">
+      <button
+        type="button"
+        class="count-btn"
+        data-target="frequency"
+        data-delta="-1"
+      >
+        −
+      </button>
+
+      <input
+        type="number"
+        name="frequency"
+        id="frequency"
+        value="{% if med.frequency and med.frequency != '?' %}{{ med.frequency }}{% else %}1{% endif %}"
+        min="1"
+      />
+
       <strong>번</strong>
-      <button type="button" class="count-btn" data-target="frequency" data-delta="1">＋</button>
+      <button
+        type="button"
+        class="count-btn"
+        data-target="frequency"
+        data-delta="1"
+      >
+        ＋
+      </button>
       <span>먹어요</span>
     </div>
 
+    <div class="meal-buttons">
+      <label>
+        <input type="radio" name="meal_timing" value="before" />
+        <span>식사 전</span>
+      </label>
+
+      <label>
+        <input type="radio" name="meal_timing" value="after" checked />
+        <span>식사 후</span>
+      </label>
+    </div>
+
     <div class="edit-row">
-      <button type="button" class="count-btn" data-target="duration" data-delta="-1">−</button>
-      <input type="number" name="duration" id="duration" value="{{ med.duration|default:1 }}" min="1">
+      <button
+        type="button"
+        class="count-btn"
+        data-target="duration"
+        data-delta="-1"
+      >
+        −
+      </button>
+
+      <input
+        type="number"
+        name="duration"
+        id="duration"
+        value="{% if med.duration and med.duration != '?' %}{{ med.duration }}{% else %}1{% endif %}"
+        min="1"
+      />
+
       <strong>일</strong>
-      <button type="button" class="count-btn" data-target="duration" data-delta="1">＋</button>
-      <span>일 동안 먹어요</span>
+      <button
+        type="button"
+        class="count-btn"
+        data-target="duration"
+        data-delta="1"
+      >
+        ＋
+      </button>
+      <span>동안 먹어요</span>
+    </div>
+
+    <div class="alarm-box">
+      <label class="alarm-toggle">
+        <span>복용 알림</span>
+        <input type="checkbox" name="alarm_enabled" id="alarm_enabled" />
+        <i></i>
+      </label>
+
+      <div class="alarm-time-list" id="alarm_time_list" hidden></div>
     </div>
 
     <button type="submit" class="ocr-add-btn edit-submit-btn">수정 완료</button>
   </form>
-</section>
-{% endblock %}
 
-{% block extra_js %}
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll(".count-btn").forEach(function (btn) {
-      btn.addEventListener("click", function () {
-        const input = document.getElementById(btn.dataset.target);
-        const delta = Number(btn.dataset.delta);
-        const next = Math.max(1, Number(input.value || 1) + delta);
-        input.value = next;
-      });
-    });
-  });
-</script>
+  <div class="time-edit-panel" id="time_edit_panel" hidden>
+    <div class="preview-steps">
+      <span></span>
+      <span></span>
+      <span class="active"></span>
+      <span></span>
+      <span></span>
+    </div>
+
+    <h2 class="ocr-result-title">알람 시간을 수정할게요</h2>
+
+    <div class="time-picker-box">
+      <div class="time-picker-row muted prev-row">
+        <span id="prev_period"></span>
+        <span id="prev_hour">07</span>
+        <span></span>
+        <span id="prev_minute">59</span>
+      </div>
+
+      <div class="time-picker-row active">
+        <span id="period_text">오전</span>
+        <span id="selected_hour">08</span>
+        <span>:</span>
+        <span id="selected_minute">00</span>
+      </div>
+
+      <div class="time-picker-row muted next-row">
+        <span></span>
+        <span id="next_hour">09</span>
+        <span></span>
+        <span id="next_minute">01</span>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="ocr-add-btn edit-submit-btn"
+      id="time_save_btn"
+    >
+      수정 완료
+    </button>
+  </div>
+</section>
+{% endblock %} {% block extra_js %}
+<script src="{% static 'medicines/js/medicines.js' %}"></script>
 {% endblock %}

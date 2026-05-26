@@ -37,6 +37,17 @@ class UserMedicine(models.Model):
         default=DEFAULT_IMAGE,
         help_text='static 기준 경로',
     )
+    dose_per_day = models.PositiveIntegerField('하루 복용 횟수', default=1)
+    duration_days = models.PositiveIntegerField('복용 일수', default=1)
+    meal_timing = models.CharField(
+        '식전/식후',
+        max_length=20,
+        choices=[
+            ('before', '식사 전'),
+            ('after', '식사 후'),
+        ],
+        default='after',
+    )
     created_at = models.DateTimeField('등록일시', auto_now_add=True)
 
     class Meta:

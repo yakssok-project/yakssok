@@ -413,9 +413,22 @@ body.medication-reminder-page {
   
   .medication-reminder-page .reminder-card-list {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: 8px;
     margin-left: 15px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 6px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .medication-reminder-page .reminder-card-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .medication-reminder-page .reminder-medicine-card {
+    flex: 0 0 342px;
+    scroll-snap-align: start;
   }
   
   /* ==============================
