@@ -18,8 +18,12 @@
     <label for="sort-select" class="sort-label">정렬</label>
 
     <select id="sort-select" class="sort-select" aria-label="약 목록 정렬">
-      <option value="{{ sort_manufactured }}" {% if sort_key == sort_manufactured %}selected{% endif %}>제조일순</option>
-      <option value="{{ sort_remaining }}" {% if sort_key == sort_remaining %}selected{% endif %}>남은 날 순</option>
+      <option value="{{ sort_manufactured }}" {% if sort_key == sort_manufactured %}selected{% endif %}>
+        제조일순
+      </option>
+      <option value="{{ sort_remaining }}" {% if sort_key == sort_remaining %}selected{% endif %}>
+        남은 날 순
+      </option>
     </select>
   </div>
 </section>
@@ -28,15 +32,21 @@
 <ul class="my-medicine-list" aria-label="복용 중인 약 목록">
   {% for medicine in medicines %}
   <li>
-    <a href="{% url 'medicine_detail' medicine.pk %}"
-      class="my-medicine-card {% if medicine.pk in ddi_warned_ids %}ddi-warned{% endif %}">
-
+    <a
+      href="{% url 'medicine_detail' medicine.pk %}"
+      class="medicine-list-card my-medicine-card {% if medicine.pk in ddi_warned_ids %}ddi-warned{% endif %}"
+    >
       <div class="medicine-thumb-wrap">
         {% if medicine.pk in ddi_warned_ids %}
         <span class="ddi-badge" aria-label="복약 주의">경고</span>
         {% endif %}
+
         {% if medicine.image_static_path %}
-        <img src="{% static medicine.image_static_path %}" alt="" class="medicine-thumb">
+        <img
+          src="{% static medicine.image_static_path %}"
+          alt=""
+          class="medicine-thumb"
+        >
         {% else %}
         <div class="medicine-thumb-placeholder" aria-hidden="true"></div>
         {% endif %}
@@ -44,9 +54,9 @@
 
       <div class="medicine-card-body">
         <h2 class="medicine-card-title">{{ medicine.medicine_name }}</h2>
-        <!-- 나머지 기존 코드 그대로 -->
-        ...
+        <p class="medicine-card-desc">...</p>
       </div>
+
       <span class="card-arrow" aria-hidden="true">›</span>
     </a>
   </li>
@@ -58,13 +68,21 @@
 
 {% if has_ddi_warning %}
 {{ ddi_warnings_json|json_script:"ddi-warnings-data" }}
+
 <div class="modal-overlay" id="ddi-modal-overlay" hidden>
-  <div class="modal-dialog ddi-modal" role="dialog" aria-modal="true" aria-labelledby="ddi-modal-title">
+  <div
+    class="modal-dialog ddi-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="ddi-modal-title"
+  >
     <h2 id="ddi-modal-title" class="modal-title">경고</h2>
+
     <p class="modal-desc" id="ddi-short-notice">
       이 약들은 같은 성분이 들어있어 함께 복용하면 몸에 무리가 갈 수 있어요.
       복용 전에 한 번 더 확인해주세요.
     </p>
+
     <div style="text-align:center; margin-bottom: 0.75rem;">
       <button type="button" id="ddi-tts-btn" class="btn-tts" aria-label="설명 듣기">
         🔊 듣기
@@ -72,8 +90,14 @@
     </div>
 
     <div class="ddi-medicine-pair" id="ddi-medicine-pair"></div>
-    <a href="tel:1339" class="btn btn-outline" id="ddi-consult-btn">약사에게 문의하기</a>
-    <button type="button" class="btn btn-primary" id="ddi-confirm-btn">확인</button>
+
+    <a href="tel:1339" class="btn btn-outline" id="ddi-consult-btn">
+      약사에게 문의하기
+    </a>
+
+    <button type="button" class="btn btn-primary" id="ddi-confirm-btn">
+      확인
+    </button>
   </div>
 </div>
 {% endif %}
@@ -83,6 +107,7 @@
 {% if has_ddi_warning %}
 <script src="{% static 'medicines/js/medicines.js' %}"></script>
 {% endif %}
+
 <script>
   document.getElementById('sort-select')?.addEventListener('change', function () {
     const url = new URL(window.location.href);
