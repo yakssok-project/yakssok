@@ -19,7 +19,7 @@
 
     <select id="sort-select" class="sort-select" aria-label="약 목록 정렬">
       <option value="{{ sort_manufactured }}" {% if sort_key == sort_manufactured %}selected{% endif %}>
-        제조일순
+        처방일순
       </option>
       <option value="{{ sort_remaining }}" {% if sort_key == sort_remaining %}selected{% endif %}>
         남은 날 순
@@ -50,16 +50,16 @@
         <h2 class="medicine-card-title">{{ medicine.medicine_name }}</h2>
 
         <p class="medicine-card-date">
-          제조일자 {{ medicine.manufactured_date|date:"Y.m.d" }}
+          처방일자 {{ medicine.created_at|date:"Y.m.d" }}
         </p>
 
-        <div class="medicine-progress" aria-hidden="true">
+        <!-- <div class="medicine-progress" aria-hidden="true">
           <div class="medicine-progress-fill" style="width: {{ medicine.remaining_percent }}%;"></div>
-        </div>
+        </div> -->
 
-        <p class="medicine-card-qty">
+        <!-- <p class="medicine-card-qty">
           <strong>{{ medicine.remaining_quantity }}일</strong> / {{ medicine.total_quantity }}일
-        </p>
+        </p> -->
       </div>
 
       <span class="card-arrow" aria-hidden="true">›</span>
