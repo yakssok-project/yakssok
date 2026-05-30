@@ -48,6 +48,8 @@ def _sort_medicines(queryset, sort_key):
         reverse=True,
     )
 
+def short_medicine_name(name):
+    return name.split("(")[0].strip()
 
 @login_required
 def home_view(request):
@@ -107,12 +109,12 @@ def medicine_list_view(request):
         warnings_for_js.append({
             "medicine_1": {
                 "id": w["medicine_1"].pk,
-                "name": w["medicine_1"].medicine_name,
+                "name": short_medicine_name(w["medicine_1"].medicine_name),
                 "image": static(w["medicine_1"].image_static_path),
             },
             "medicine_2": {
                 "id": w["medicine_2"].pk,
-                "name": w["medicine_2"].medicine_name,
+                "name": short_medicine_name(w["medicine_2"].medicine_name),
                 "image": static(w["medicine_2"].image_static_path),
             },
             "reason": original_reason,
