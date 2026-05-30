@@ -164,3 +164,112 @@ def explain_ddi_reason_with_gemini(reason):
     except Exception as e:
         print("DDI Gemini explanation error:", e)
         return reason
+    
+
+# 더미데이터
+DUMMY_MEDICINE_DETAILS = {
+    "레보프라이드정": {
+        "manufacturer": "SK케미칼",
+        "ingredient_name": "Levosulpiride",
+        "appearance": "백색의 원형 정제",
+        "mark_front": "SK",
+        "mark_back": "25",
+        "color": "하양",
+        "image": "medicines/img/레보프라이드.jpg",
+    },
+
+    "울메텍플러스정20/12.5mg": {
+        "manufacturer": "한미약품",
+        "ingredient_name": "Olmesartan medoxomil + Hydrochlorothiazide",
+        "appearance": "적황색을 띄는 원형의 필름코팅정",
+        "mark_front": "SANKYO",
+        "mark_back": "C22",
+        "color": "주황",
+        "image": "medicines/img/올메텍플러스정.jpg",
+    },
+
+    "록소날정": {
+        "manufacturer": "경동제약",
+        "ingredient_name": "Loxoprofen Sodium",
+        "appearance": "흰색∼미황색의 원형 정제",
+        "mark_front": "LOT",
+        "mark_back": "식별문자 없음",
+        "color": "하양/미황색",
+        "image": "medicines/img/록소날.jpg",
+    },
+
+    "바난정": {
+        "manufacturer": "제일약품",
+        "ingredient_name": "Cefpodoxime Proxetil",
+        "appearance": "흰색-미황색의 필름코팅정",
+        "mark_front": "BNT",
+        "mark_back": "식별문자 없음",
+        "color": "하양/미황색",
+        "image": "medicines/img/바난정.jpg",
+    },
+
+    "비졸본정": {
+        "manufacturer": "사노피-아벤티스코리아",
+        "ingredient_name": "Bromhexine Hydrochloride",
+        "appearance": "정제",
+        "mark_front": "확인 필요",
+        "mark_back": "확인 필요",
+        "color": "확인 필요",
+        "image": "medicines/img/비졸본정.jpg",
+    },
+
+    "싸이메트정": {
+        "manufacturer": "확인 필요",
+        "ingredient_name": "Cimetidine",
+        "appearance": "담녹색의 필름코팅정",
+        "mark_front": "확인 필요",
+        "mark_back": "확인 필요",
+        "color": "녹색",
+        "image": "medicines/img/싸이메트정.jpg",
+    },
+
+    "엠티엑스주": {
+        "manufacturer": "비씨월드제약",
+        "ingredient_name": "Methotrexate",
+        "appearance": "갈색 바이알에 충진된 담황색 주사액",
+        "mark_front": "주사제",
+        "mark_back": "주사제",
+        "color": "담황색",
+        "image": "medicines/img/엠티엑스주.jpg",
+    },
+
+    "올메텍플러스정": {
+        "manufacturer": "대웅제약",
+        "ingredient_name": "Olmesartan medoxomil + Hydrochlorothiazide",
+        "appearance": "적황색을 띄는 원형의 필름코팅정",
+        "mark_front": "SANKYO",
+        "mark_back": "C22",
+        "color": "주황",
+        "image": "medicines/img/올메텍플러스정.jpg",
+    },
+
+    "한미아스피린장용정": {
+        "manufacturer": "한미약품",
+        "ingredient_name": "Aspirin",
+        "appearance": "백색의 원형 장용성 필름코팅정제",
+        "mark_front": "Aspirin",
+        "mark_back": "100",
+        "color": "하양",
+        "image": "medicines/img/한미아스피린장용정.jpg",
+    },
+}
+
+def get_dummy_medicine_detail(medicine_name):
+    name = (medicine_name or "").strip()
+
+    for dummy_name, detail in DUMMY_MEDICINE_DETAILS.items():
+        if name == dummy_name:
+            return detail
+
+        if name.startswith(dummy_name):
+            return detail
+
+        if dummy_name.startswith(name):
+            return detail
+
+    return None

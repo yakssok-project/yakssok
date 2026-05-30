@@ -9,6 +9,7 @@ from .models import UserMedicine
 from .utils import sort_medicines_by_next_intake
 from .utils import explain_ddi_reason_with_gemini
 from .utils import extract_medicines_from_prescription
+from .utils import get_dummy_medicine_detail
 
 import csv
 from pathlib import Path
@@ -228,10 +229,18 @@ def medication_reminder_view(request):
             else:
                 progress = 0
 
+            dummy_detail = get_dummy_medicine_detail(medicine.medicine_name)
+
+            image_static_path = (
+                dummy_detail["image"]
+                if dummy_detail
+                else medicine.image_static_path
+            )
+
             groups[key]["medicines"].append({
                 "pk": medicine.pk,
                 "name": medicine.medicine_name,
-                "image_static_path": medicine.image_static_path,
+                "image_static_path": image_static_path,
                 "progress": progress,
                 "is_warning": medicine.pk in warning_medicine_ids,
                 "intake_status": log_map.get((medicine.pk, time)),
@@ -837,3 +846,27 @@ def update_intake_log_api(request):
         "medicine_id": medicine.pk,
         "intake_time": intake_time,
     })
+
+@login_required
+def medicine_detail_view(request, pk):
+    """약 상세."""
+    medicine = get_object_or_404(UserMedicine, pk=pk, user=request.user)
+
+    dummy_detail = get_dummy_medicine_detail(medicine.medicine_name)
+
+    if dummy_detail:
+        medicine.manufacturer = dummy_detail["manufacturer"]
+        medicine.ingredient_name = dummy_detail["ingredient_name"]
+        medicine.appearance = dummy_detail["appearance"]
+        medicine.mark_front = dummy_detail["mark_front"]
+        medicine.mark_back = dummy_detail["mark_back"]
+        medicine.color = dummy_detail["color"]
+        medicine.image = dummy_detail["image"]
+
+    context = {
+        'user': request.user,
+        'medicine': medicine,
+        'nav_active': 'reminder',
+        'back_url': reverse('medication_reminder'),
+    }
+    return render(request, 'medicines/medicine_detail.html', context)
