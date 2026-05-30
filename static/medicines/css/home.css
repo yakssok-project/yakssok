@@ -159,23 +159,31 @@
 }
 
 .today-medicine-info {
-  height: 4.9rem;
-  padding: 0.65rem 0.8rem 0.45rem;
+  height: auto;
+  padding: 0;
   display: flex;
   gap: 0.65rem;
   align-items: flex-start;
 }
 
 .today-thumb {
-  width: 4rem;
-  height: 4rem;
+  width: 3.8rem;
+  height: 3.8rem;
   border-radius: 6px;
   background: #d9d9d9;
+  overflow: hidden;
   flex-shrink: 0;
 }
 
-.today-text {
-  min-width: 0;
+.today-thumb {
+  overflow: hidden;
+}
+
+.today-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .today-badge {
@@ -335,27 +343,28 @@
 .today-medicine-card {
   background: #edf9fb;
   border-radius: 1.25rem;
-
-  overflow: visible;
-
-  padding-bottom: 0.55rem;
+  overflow: hidden;
+  padding: 0.75rem;
+  box-sizing: border-box;
 }
 
 .today-check-btn {
-  width: calc(100% - 1.6rem);
-  margin: 0.35rem auto 0;
-  padding: 0.15rem;
+  width: 100%;
+  height: 5.8rem;
+  margin: 0.75rem 0 0;
+  padding: 0;
   border: none;
   background: transparent;
   display: block;
+  overflow: hidden;
+  border-radius: 0.7rem;
 }
 
 .medicine-state-image {
   width: 100%;
-  height: 7rem;
+  height: 100%;
   object-fit: contain;
   display: block;
-  border-radius: 0.7rem;
 }
 
 .today-thumb {

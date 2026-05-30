@@ -73,9 +73,12 @@ def home_view(request):
         except Exception:
             return time_text
 
-    active_medicines = _active_medicines(request.user)
-    medicine_items = sort_medicines_by_next_intake(active_medicines)
+    active_medicines = [
+        apply_dummy_detail_to_medicine(medicine)
+        for medicine in _active_medicines(request.user)
+    ]
 
+    medicine_items = sort_medicines_by_next_intake(active_medicines)
     today = timezone.localdate()
 
     intake_logs = IntakeLog.objects.filter(

@@ -37,17 +37,17 @@
     <div class="today-card-item">
       <p class="today-time">
         {% if item.display_time or item.display_meal_timing %}
-          {{ item.display_time }}{% if item.display_time and item.display_meal_timing %} | {% endif %}{{ item.display_meal_timing }}
+        {{ item.display_time }}{% if item.display_time and item.display_meal_timing %} | {% endif %}{{item.display_meal_timing }}
         {% endif %}
       </p>
 
-      <article
-        class="today-medicine-card"
-        data-medicine-id="{{ item.medicine.pk }}"
-        data-intake-time="{{ item.current_intake_time }}"
-      >
+      <article class="today-medicine-card" data-medicine-id="{{ item.medicine.pk }}"
+        data-intake-time="{{ item.current_intake_time }}">
         <div class="today-medicine-info">
-          <div class="today-thumb"></div>
+          <div class="today-thumb">
+            <img src="{% static item.medicine.dummy_image_static_path|default:'medicines/img/tylenol.jpg' %}"
+              alt="{{ item.medicine.medicine_name }}" class="today-thumb-img" />
+          </div>
 
           <div class="today-text">
             <span class="today-badge">처방약</span>
@@ -55,16 +55,12 @@
           </div>
         </div>
 
-        <button
-          type="button"
+        <button type="button"
           class="today-check-btn medicine-complete-btn{% if item.intake_status == 'taken' %} completed{% endif %}"
-          data-dose-status="taken"
-        >
+          data-dose-status="taken">
           <img
             src="{% if item.intake_status == 'taken' %}{% static 'medicines/img/after.png' %}{% else %}{% static 'medicines/img/before.png' %}{% endif %}"
-            alt="{% if item.intake_status == 'taken' %}복용 완료{% else %}복용 전{% endif %}"
-            class="medicine-state-image"
-          />
+            alt="{% if item.intake_status == 'taken' %}복용 완료{% else %}복용 전{% endif %}" class="medicine-state-image" />
         </button>
       </article>
     </div>
