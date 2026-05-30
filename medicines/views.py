@@ -10,6 +10,7 @@ from .utils import sort_medicines_by_next_intake
 from .utils import explain_ddi_reason_with_gemini
 from .utils import extract_medicines_from_prescription
 from .utils import get_dummy_medicine_detail
+from .utils import apply_dummy_detail_to_medicine
 
 import csv
 from pathlib import Path
@@ -125,7 +126,17 @@ def medicine_list_view(request):
         sort_key = SORT_MANUFACTURED
 
     active_medicines = _sort_medicines(_active_medicines(request.user), sort_key)
-    all_user_medicines = list(_active_medicines(request.user))
+    
+    active_medicines = [
+    apply_dummy_detail_to_medicine(medicine)
+    for medicine in active_medicines
+    ]
+
+    all_user_medicines = [
+    apply_dummy_detail_to_medicine(medicine)
+    for medicine in _active_medicines(request.user)
+    ]
+
     ddi_warnings = find_ddi_warnings(all_user_medicines)
 
     warnings_for_js = []
@@ -139,12 +150,12 @@ def medicine_list_view(request):
             "medicine_1": {
                 "id": w["medicine_1"].pk,
                 "name": short_medicine_name(w["medicine_1"].medicine_name),
-                "image": static(w["medicine_1"].image_static_path),
+                "image": static(w["medicine_1"].dummy_image_static_path),
             },
             "medicine_2": {
                 "id": w["medicine_2"].pk,
                 "name": short_medicine_name(w["medicine_2"].medicine_name),
-                "image": static(w["medicine_2"].image_static_path),
+                "image": static(w["medicine_2"].dummy_image_static_path),
             },
             "reason": original_reason,
             "easy_reason": easy_reason,
@@ -717,6 +728,7 @@ def prescription_medicine_edit(request, index):
 @login_required
 def medicine_edit_view(request, pk):
     medicine = get_object_or_404(UserMedicine, pk=pk, user=request.user)
+    medicine = apply_dummy_detail_to_medicine(medicine)
 
     from_page = request.GET.get("from")
 
@@ -760,7 +772,7 @@ def medicine_edit_view(request, pk):
 
     med = {
         "name": medicine.medicine_name,
-        "image": medicine.image_static_path,
+"image": medicine.dummy_image_static_path,
         "frequency": medicine.dose_per_day,
         "duration": medicine.duration_days,
         "meal_timing": medicine.meal_timing,

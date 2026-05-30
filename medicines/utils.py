@@ -273,3 +273,23 @@ def get_dummy_medicine_detail(medicine_name):
             return detail
 
     return None
+
+def apply_dummy_detail_to_medicine(medicine):
+    dummy_detail = get_dummy_medicine_detail(medicine.medicine_name)
+
+    if not dummy_detail:
+        medicine.dummy_image_static_path = medicine.image_static_path
+        return medicine
+
+    medicine.manufacturer = dummy_detail.get("manufacturer")
+    medicine.ingredient_name = dummy_detail.get("ingredient_name")
+    medicine.appearance = dummy_detail.get("appearance")
+    medicine.mark_front = dummy_detail.get("mark_front")
+    medicine.mark_back = dummy_detail.get("mark_back")
+    medicine.color = dummy_detail.get("color")
+
+    # image_static_path는 property라 수정 불가
+    # 대신 새 속성을 붙임
+    medicine.dummy_image_static_path = dummy_detail.get("image")
+
+    return medicine

@@ -39,8 +39,8 @@
         <span class="ddi-badge" aria-label="복약 주의">경고</span>
         {% endif %}
 
-        {% if medicine.image_static_path %}
-        <img src="{% static medicine.image_static_path %}" alt="" class="medicine-thumb">
+        {% if medicine.dummy_image_static_path %}
+        <img src="{% static medicine.dummy_image_static_path %}" alt="" class="medicine-thumb">
         {% else %}
         <div class="medicine-thumb-placeholder" aria-hidden="true"></div>
         {% endif %}
