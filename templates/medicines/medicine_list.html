@@ -32,21 +32,15 @@
 <ul class="my-medicine-list" aria-label="복용 중인 약 목록">
   {% for medicine in medicines %}
   <li>
-    <a
-      href="{% url 'medicine_detail' medicine.pk %}"
-      class="medicine-list-card my-medicine-card {% if medicine.pk in ddi_warned_ids %}ddi-warned{% endif %}"
-    >
+    <a href="{% url 'medicine_detail' medicine.pk %}"
+      class="medicine-list-card my-medicine-card {% if medicine.pk in ddi_warned_ids %}ddi-warned{% endif %}">
       <div class="medicine-thumb-wrap">
         {% if medicine.pk in ddi_warned_ids %}
         <span class="ddi-badge" aria-label="복약 주의">경고</span>
         {% endif %}
 
         {% if medicine.image_static_path %}
-        <img
-          src="{% static medicine.image_static_path %}"
-          alt=""
-          class="medicine-thumb"
-        >
+        <img src="{% static medicine.image_static_path %}" alt="" class="medicine-thumb">
         {% else %}
         <div class="medicine-thumb-placeholder" aria-hidden="true"></div>
         {% endif %}
@@ -54,7 +48,18 @@
 
       <div class="medicine-card-body">
         <h2 class="medicine-card-title">{{ medicine.medicine_name }}</h2>
-        <p class="medicine-card-desc">...</p>
+
+        <p class="medicine-card-date">
+          제조일자 {{ medicine.manufactured_date|date:"Y.m.d" }}
+        </p>
+
+        <div class="medicine-progress" aria-hidden="true">
+          <div class="medicine-progress-fill" style="width: {{ medicine.remaining_percent }}%;"></div>
+        </div>
+
+        <p class="medicine-card-qty">
+          <strong>{{ medicine.remaining_quantity }}일</strong> / {{ medicine.total_quantity }}일
+        </p>
       </div>
 
       <span class="card-arrow" aria-hidden="true">›</span>
@@ -70,12 +75,7 @@
 {{ ddi_warnings_json|json_script:"ddi-warnings-data" }}
 
 <div class="modal-overlay" id="ddi-modal-overlay" hidden>
-  <div
-    class="modal-dialog ddi-modal"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="ddi-modal-title"
-  >
+  <div class="modal-dialog ddi-modal" role="dialog" aria-modal="true" aria-labelledby="ddi-modal-title">
     <h2 id="ddi-modal-title" class="modal-title">경고</h2>
 
     <p class="modal-desc" id="ddi-short-notice">
