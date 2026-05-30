@@ -82,7 +82,7 @@
 /* 알림 카드 리스트 */
 .yakssok-alarm-card-list {
   position: absolute;
-  top: 169px;
+  top: 205px;
   left: 50%;
   transform: translateX(-50%);
 
@@ -98,7 +98,7 @@
   position: relative;
 
   width: 344px;
-  height: 138px;
+  height: 122px;
 
   border-radius: 10px;
   border: 0.4px solid #cccccc;
@@ -107,6 +107,11 @@
   box-sizing: border-box;
 
   overflow: hidden;
+
+  transition:
+    transform 0.25s ease,
+    opacity 0.25s ease,
+    height 0.25s ease;
 }
 
 .yakssok-alarm-card.is-hidden {
@@ -119,19 +124,27 @@
   top: 12px;
   left: 15px;
 
-  width: 64px;
-  height: 64px;
+  width: 70px;
+  height: 70px;
 
   border-radius: 4px;
   background: #d9d9d9;
+  overflow: hidden;
+}
+
+.alarm-card-thumb img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
 /* 카드 본문 */
 .alarm-card-body {
   position: absolute;
-  top: 12px;
-  left: 91px;
-  right: 42px;
+  top: 14px;
+  left: 98px;
+  right: 34px;
 }
 
 .alarm-card-label-row {
@@ -153,7 +166,7 @@
 
   color: #ffffff;
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 500;
   line-height: 1;
   white-space: nowrap;
@@ -168,9 +181,9 @@
 
   color: #444444;
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  font-size: 20px;
-  font-weight: 500;
-  line-height: normal;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.1;
   letter-spacing: -1px;
 
   overflow: hidden;
@@ -179,7 +192,7 @@
 }
 
 .alarm-card-progress {
-  width: 216px;
+  width: 100%;
   height: 6px;
   margin-top: 6px;
 
@@ -189,6 +202,7 @@
 }
 
 .alarm-card-progress-fill {
+  width: 50%;
   height: 6px;
   border-radius: 999px;
   background: linear-gradient(90deg, #25cc87 0%, #1cbbda 100%);
@@ -197,8 +211,9 @@
 /* 카드 오른쪽 화살표 */
 .alarm-card-arrow {
   position: absolute;
-  top: 52px;
-  left: 312px;
+  top: 47px;
+  right: 14px;
+  left: auto;
 
   width: 24px;
   height: 24px;
@@ -208,7 +223,7 @@
   padding: 0;
 
   color: #999999;
-  font-size: 44px;
+  font-size: 30px;
   line-height: 18px;
   font-weight: 300;
 
@@ -224,7 +239,7 @@
   position: absolute;
   left: 15px;
   right: 15px;
-  bottom: 15px;
+  bottom: 12px;
 
   display: flex;
   gap: 12px;
@@ -232,7 +247,7 @@
 
 .alarm-card-dose-btn {
   width: 150px;
-  height: 40px;
+  height: 39px;
 
   border: 0;
   border-radius: 10px;
@@ -240,8 +255,8 @@
 
   color: #444444;
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  font-size: 20px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   letter-spacing: -0.4px;
 
   display: flex;
@@ -254,13 +269,13 @@
 /* 모두 복용했어요 */
 .yakssok-alarm-all-btn {
   position: absolute;
-  top: 629px;
+  top: 610px;
   left: 50%;
   transform: translateX(-50%);
 
-  width: 316px;
-  min-height: 63px;
-  padding: 15px 80px;
+  width: 300px;
+  min-height: 60px;
+  padding: 15px 70px;
   box-sizing: border-box;
 
   display: flex;
@@ -274,7 +289,7 @@
 
   color: #ffffff;
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  font-size: 24px;
+  font-size: 22px;
   font-style: normal;
   font-weight: 600;
   line-height: normal;
@@ -286,13 +301,13 @@
 /* 15분 후 다시 알림 */
 .yakssok-alarm-snooze-btn {
   position: absolute;
-  top: 720px;
+  top: 695px;
   left: 50%;
   transform: translateX(-50%);
 
-  width: 316px;
+  width: 300px;
   min-height: 55px;
-  padding: 15px 80px;
+  padding: 15px 70px;
   box-sizing: border-box;
 
   display: inline-flex;
@@ -306,23 +321,17 @@
 
   color: #ffffff;
   font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 500;
   line-height: normal;
   letter-spacing: -1.2px;
 
   cursor: pointer;
 }
+
 /* ==============================
    알림 카드 사라짐/등장 애니메이션
 ============================== */
-
-.yakssok-alarm-card {
-  transition:
-    transform 0.25s ease,
-    opacity 0.25s ease,
-    height 0.25s ease;
-}
 
 /* 사라지는 카드 */
 .yakssok-alarm-card.is-exiting {
@@ -339,7 +348,7 @@
   0% {
     opacity: 1;
     transform: translateY(0) scale(1);
-    height: 138px;
+    height: 122px;
   }
 
   100% {
@@ -361,3 +370,30 @@
     transform: translateY(0) scale(1);
   }
 }
+
+/* TTS 듣기 버튼 */
+.yakssok-alarm-tts-btn {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    border: 0;
+    background: transparent;
+
+    color: transparent;
+
+    cursor: default;
+
+    z-index: 20;
+  }
+
+  .alarm-card-action-row {
+    display: none;
+  }
+
+  .yakssok-alarm-snooze-btn {
+    white-space: nowrap;
+    padding: 0;
+  }

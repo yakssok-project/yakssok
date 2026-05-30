@@ -4,8 +4,16 @@ document.addEventListener("DOMContentLoaded", function () {
   const alarmCardList = document.getElementById("yakssokAlarmCardList");
   const allTakenBtn = document.getElementById("yakssokAlarmAllTakenBtn");
   const snoozeBtn = document.getElementById("yakssokAlarmSnoozeBtn");
+  const ttsBtn = document.getElementById("yakssokAlarmTtsBtn");
 
-  if (!overlay || !alarmTime || !alarmCardList || !allTakenBtn || !snoozeBtn) {
+  if (
+    !overlay ||
+    !alarmTime ||
+    !alarmCardList ||
+    !allTakenBtn ||
+    !snoozeBtn ||
+    !ttsBtn
+  ) {
     return;
   }
 
@@ -16,6 +24,23 @@ document.addEventListener("DOMContentLoaded", function () {
   const exitDuration = 280;
   const enterDuration = 240;
   const alarmCheckInterval = 30000;
+
+  function speakMedicineAlarm() {
+    if (!("speechSynthesis" in window)) {
+      console.log("이 브라우저는 TTS를 지원하지 않습니다.");
+      return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const message = new SpeechSynthesisUtterance("약을 복용하세요.");
+    message.lang = "ko-KR";
+    message.rate = 0.9;
+    message.pitch = 1;
+    message.volume = 1;
+
+    window.speechSynthesis.speak(message);
+  }
 
   function escapeHtml(value) {
     return String(value ?? "")
@@ -32,32 +57,26 @@ document.addEventListener("DOMContentLoaded", function () {
     const image = escapeHtml(medicine.image || "");
 
     return `
-      <article class="alarm-card" data-alarm-card data-medicine-id="${id}">
-        <div class="alarm-card-image">
-          ${
-            image
-              ? `<img src="${image}" alt="${name}" />`
-              : `<div class="alarm-card-image-placeholder"></div>`
-          }
+      <article class="yakssok-alarm-card" data-alarm-card data-medicine-id="${id}">
+        <div class="alarm-card-thumb">
+          ${image ? `<img src="${image}" alt="${name}" />` : ``}
         </div>
 
-        <div class="alarm-card-content">
-          <span class="alarm-card-badge">처방약</span>
-          <p class="alarm-card-name">${name}</p>
+        <div class="alarm-card-body">
+          <div class="alarm-card-label-row">
+            <span class="alarm-card-label label-prescription">처방약</span>
+          </div>
+
+          <h3 class="alarm-card-name">${name}</h3>
 
           <div class="alarm-card-progress">
-            <span></span>
+            <div class="alarm-card-progress-fill" style="width: 52%;"></div>
           </div>
         </div>
 
-        <button type="button" class="alarm-card-arrow" aria-label="약 상세 보기">
-          &gt;
+        <button type="button" class="alarm-card-arrow" aria-label="약 상세보기">
+          ›
         </button>
-
-        <div class="alarm-card-actions">
-          <button type="button" data-alarm-action="taken">복용함</button>
-          <button type="button" data-alarm-action="skip">복용안함</button>
-        </div>
       </article>
     `;
   }
@@ -161,6 +180,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function hideAlarm() {
     overlay.hidden = true;
+
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
   }
 
   function snoozeAlarm(timeText) {
@@ -190,9 +213,13 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       const alarmKey =
-        data.now + "-" + data.medicines.map(function (medicine) {
-          return medicine.id;
-        }).join(",");
+        data.now +
+        "-" +
+        data.medicines
+          .map(function (medicine) {
+            return medicine.id;
+          })
+          .join(",");
 
       if (lastAlarmKey === alarmKey) {
         return;
@@ -208,6 +235,18 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error("복약 알림 확인 실패:", error);
     }
   }
+
+  let hasPlayedTts = false;
+
+  ttsBtn.addEventListener("click", function () {
+    if (hasPlayedTts) return;
+
+    hasPlayedTts = true;
+
+    speakMedicineAlarm();
+
+    ttsBtn.style.pointerEvents = "none";
+  });
 
   alarmCardList.addEventListener("click", function (event) {
     const doseButton = event.target.closest("[data-alarm-action]");
@@ -232,6 +271,7 @@ document.addEventListener("DOMContentLoaded", function () {
     hide: hideAlarm,
     snooze: snoozeAlarm,
     render: renderVisibleCards,
+    speak: speakMedicineAlarm,
   };
 
   renderVisibleCards();
