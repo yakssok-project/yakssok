@@ -18,4 +18,5 @@ urlpatterns = [
     path("alarm/due/", views.due_medicine_alarm_api, name="due_medicine_alarm_api"),
     path("<int:pk>/edit/", views.medicine_edit_view, name="medicine_edit"),
     path("<int:pk>/delete/", views.medicine_delete_view, name="medicine_delete"),
+    path("intake-log/update/", views.update_intake_log_api, name="update_intake_log_api"),
 ]

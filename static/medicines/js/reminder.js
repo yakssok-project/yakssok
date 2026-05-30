@@ -12,33 +12,21 @@ document.addEventListener("DOMContentLoaded", function () {
   const selectedMonthDay = document.getElementById("selectedMonthDay");
   const selectedYear = document.getElementById("selectedYear");
 
-  if (
-    !calendar ||
-    !monthText ||
-    !weekLabel ||
-    !weekWrap ||
-    !prevBtn ||
-    !nextBtn ||
-    !selectedDateBar ||
-    !selectedMonthDay ||
-    !selectedYear
-  ) {
-    console.log("달력 요소를 찾지 못했어요.");
-    return;
-  }
-
   const weekdayNames = ["일", "월", "화", "수", "목", "금", "토"];
+
+  function getCsrfToken() {
+    return document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("csrftoken="))
+      ?.split("=")[1];
+  }
 
   function makeDateOnly(date) {
     return new Date(date.getFullYear(), date.getMonth(), date.getDate());
   }
 
   const todayDate = makeDateOnly(new Date());
-
-  // 현재 보고 있는 주차 기준 날짜
   let viewDate = new Date(todayDate);
-
-  // 선택 날짜: 처음에는 오늘로 설정
   let selectedDate = new Date(todayDate);
 
   function isSameDate(a, b) {
@@ -53,33 +41,34 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function getStartOfWeek(date) {
     const copied = new Date(date);
-    copied.setDate(copied.getDate() - copied.getDay()); // 일요일 시작
+    copied.setDate(copied.getDate() - copied.getDay());
     return copied;
   }
 
   function getWeekOfMonth(date) {
     const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
     const firstDayWeekday = firstDayOfMonth.getDay();
+
     return Math.ceil((date.getDate() + firstDayWeekday) / 7);
   }
 
   function updateSelectedDateBar() {
-    if (!selectedDate) {
-      selectedDateBar.hidden = true;
-      return;
-    }
+    if (!selectedDateBar || !selectedMonthDay || !selectedYear) return;
 
     selectedDateBar.hidden = false;
-    selectedMonthDay.textContent = `${selectedDate.getMonth() + 1}월 ${selectedDate.getDate()}일`;
+    selectedMonthDay.textContent = `${
+      selectedDate.getMonth() + 1
+    }월 ${selectedDate.getDate()}일`;
     selectedYear.textContent = selectedDate.getFullYear();
   }
 
   function renderCalendar() {
+    if (!monthText || !weekLabel || !weekWrap) return;
+
     const startOfWeek = getStartOfWeek(viewDate);
 
     monthText.textContent = `${viewDate.getMonth() + 1}월`;
     weekLabel.textContent = `${getWeekOfMonth(viewDate)}주차`;
-
     weekWrap.innerHTML = "";
 
     for (let i = 0; i < 7; i++) {
@@ -93,12 +82,10 @@ document.addEventListener("DOMContentLoaded", function () {
       if (i === 0) button.classList.add("is-sunday");
       if (i === 6) button.classList.add("is-saturday");
 
-      // 오늘 날짜는 테두리 표시
       if (isSameDate(current, todayDate)) {
         button.classList.add("is-today");
       }
 
-      // 선택 날짜가 현재 보이는 주차 안에 있을 때만 채운 원 표시
       if (selectedDate && isSameDate(current, selectedDate)) {
         button.classList.add("is-selected");
       }
@@ -108,7 +95,6 @@ document.addEventListener("DOMContentLoaded", function () {
         <span class="calendar-date">${current.getDate()}</span>
       `;
 
-      // 날짜를 직접 클릭했을 때만 선택 날짜 변경
       button.addEventListener("click", function () {
         selectedDate = new Date(current);
         viewDate = new Date(current);
@@ -121,65 +107,90 @@ document.addEventListener("DOMContentLoaded", function () {
     updateSelectedDateBar();
   }
 
-  // 이전 주차 이동
-  prevBtn.addEventListener("click", function () {
-    viewDate.setDate(viewDate.getDate() - 7);
-
-    // 선택 날짜는 유지한다.
-    // 그래서 초록 박스 날짜는 그대로 유지됨.
-    renderCalendar();
-  });
-
-  // 다음 주차 이동
-  nextBtn.addEventListener("click", function () {
-    viewDate.setDate(viewDate.getDate() + 7);
-
-    // 선택 날짜는 유지한다.
-    // 그래서 초록 박스 날짜는 그대로 유지됨.
-    renderCalendar();
-  });
-
-  renderCalendar();
-  document.addEventListener("DOMContentLoaded", function () {
-  document.querySelectorAll(".reminder-medicine-card").forEach(function (card) {
-    const buttons = card.querySelectorAll(".reminder-dose-btn");
-
-    buttons.forEach(function (button) {
-      button.addEventListener("click", function () {
-        buttons.forEach(function (btn) {
-          btn.classList.remove("is-taken", "is-skipped");
-        });
-
-        if (button.dataset.doseStatus === "taken") {
-          button.classList.add("is-taken");
-        }
-
-        if (button.dataset.doseStatus === "skipped") {
-          button.classList.add("is-skipped");
-        }
-      });
+  if (prevBtn) {
+    prevBtn.addEventListener("click", function () {
+      viewDate.setDate(viewDate.getDate() - 7);
+      renderCalendar();
     });
-  });
-});
-});
-document.addEventListener("DOMContentLoaded", function () {
-  document.querySelectorAll(".reminder-medicine-card").forEach(function (card) {
-    const buttons = card.querySelectorAll(".reminder-dose-btn");
+  }
 
-    buttons.forEach(function (button) {
-      button.addEventListener("click", function () {
-        buttons.forEach(function (btn) {
-          btn.classList.remove("is-taken", "is-skipped");
-        });
-
-        if (button.dataset.doseStatus === "taken") {
-          button.classList.add("is-taken");
-        }
-
-        if (button.dataset.doseStatus === "skipped") {
-          button.classList.add("is-skipped");
-        }
-      });
+  if (nextBtn) {
+    nextBtn.addEventListener("click", function () {
+      viewDate.setDate(viewDate.getDate() + 7);
+      renderCalendar();
     });
+  }
+
+  async function saveIntakeLog(card, button) {
+    const medicineId = card.dataset.medicineId;
+    const intakeTime = card.dataset.intakeTime;
+    const status = button.dataset.doseStatus;
+
+    if (!medicineId || !intakeTime || !status) {
+      console.error("복용 기록 저장에 필요한 데이터가 없습니다.", {
+        medicineId,
+        intakeTime,
+        status,
+      });
+      return;
+    }
+
+    try {
+      const response = await fetch("/medicines/intake-log/update/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": getCsrfToken(),
+        },
+        body: JSON.stringify({
+          medicine_id: medicineId,
+          intake_time: intakeTime,
+          status: status,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        console.error("복용 기록 저장 실패:", data);
+        return;
+      }
+
+      card.querySelectorAll(".reminder-dose-btn").forEach(function (btn) {
+        btn.classList.remove("is-selected", "is-taken", "is-skipped");
+      });
+
+      button.classList.add("completed");
+
+      const image = button.querySelector(".medicine-state-image");
+      if (image) {
+        image.src = "/static/medicines/img/after.png";
+        image.alt = "복용 완료";
+      }
+
+      if (status === "taken") {
+        button.classList.add("is-taken");
+      }
+
+      if (status === "skipped") {
+        button.classList.add("is-skipped");
+      }
+    } catch (error) {
+      console.error("복용 기록 저장 실패:", error);
+    }
+  }
+
+  document.addEventListener("click", function (event) {
+    const button = event.target.closest(".reminder-dose-btn");
+    if (!button) return;
+
+    const card = button.closest(".reminder-medicine-card");
+    if (!card) return;
+
+    saveIntakeLog(card, button);
   });
+
+  if (calendar) {
+    renderCalendar();
+  }
 });

@@ -104,7 +104,11 @@
 
             <div class="reminder-card-list">
               {% for medicine in group.medicines %}
-                <article class="reminder-medicine-card{% if medicine.is_warning %} is-warning{% endif %}">
+                <article
+                  class="reminder-medicine-card{% if medicine.is_warning %} is-warning{% endif %}"
+                  data-medicine-id="{{ medicine.pk }}"
+                  data-intake-time="{{ group.raw_time }}"
+                >
                   <div class="reminder-medicine-img-wrap">
                     <img
                       src="{% static medicine.image_static_path %}"
@@ -159,29 +163,15 @@
                   <div class="reminder-action-row">
                     <button
                       type="button"
-                      class="reminder-dose-btn"
+                      class="reminder-dose-btn medicine-complete-btn{% if medicine.intake_status == 'taken' %} completed{% endif %}"
                       data-dose-status="taken"
                     >
                       <img
-                        src="{% static 'medicines/img/check.svg' %}"
-                        alt=""
-                        class="dose-check-icon"
+                        src="{% if medicine.intake_status == 'taken' %}{% static 'medicines/img/after.png' %}{% else %}{% static 'medicines/img/before.png' %}{% endif %}"
+                        alt="{% if medicine.intake_status == 'taken' %}복용 완료{% else %}복용 전{% endif %}"
+                        class="medicine-state-image"
                       />
-                      <span>복용함</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      class="reminder-dose-btn"
-                      data-dose-status="skipped"
-                    >
-                      <img
-                        src="{% static 'medicines/img/check.svg' %}"
-                        alt=""
-                        class="dose-check-icon"
-                      />
-                      <span>복용안함</span>
-                    </button>
+                    </button> 
                   </div>
                 </article>
               {% endfor %}

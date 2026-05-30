@@ -22,6 +22,10 @@ from django.templatetags.static import static
 from .utils import parse_intake_times
 from django.urls import reverse
 
+from .models import UserMedicine, IntakeLog
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+
 SORT_MANUFACTURED = 'manufactured'
 SORT_REMAINING = 'remaining'
 
@@ -47,20 +51,40 @@ def _sort_medicines(queryset, sort_key):
 
 @login_required
 def home_view(request):
-    """홈 화면 — 현재 복용 중인 약 목록."""
     active_medicines = _active_medicines(request.user)
     medicine_items = sort_medicines_by_next_intake(active_medicines)
+
+    today = timezone.localdate()
+
+    intake_logs = IntakeLog.objects.filter(
+        user=request.user,
+        intake_date=today,
+    )
+
+    log_map = {
+        (log.medicine_id, log.intake_time): log.status
+        for log in intake_logs
+    }
+
+    for item in medicine_items:
+        medicine = item["medicine"]
+
+        first_time = medicine.intake_time.split(",")[0].strip()
+
+        item["current_intake_time"] = first_time
+        item["intake_status"] = log_map.get((medicine.pk, first_time))
+
     medicine_count = len(medicine_items)
 
     context = {
-        'user': request.user,
-        'medicine_items': medicine_items,
-        'medicine_count': medicine_count,
-        'has_medicines': medicine_count > 0,
-        'nav_active': 'home',
+        "user": request.user,
+        "medicine_items": medicine_items,
+        "medicine_count": medicine_count,
+        "has_medicines": medicine_count > 0,
+        "nav_active": "home",
     }
-    return render(request, 'medicines/home.html', context)
 
+    return render(request, "medicines/home.html", context)
 
 @login_required
 def medicine_list_view(request):
@@ -134,38 +158,64 @@ def medicine_detail_view(request, pk):
 def medication_reminder_view(request):
     """복약 관리 / 약 영양제 복용기록 화면."""
 
-    active_medicines = _active_medicines(request.user).filter(alarm_enabled=True)
+    medicines = UserMedicine.objects.filter(
+        user=request.user,
+        is_active=True,
+        alarm_enabled=True,
+    ).order_by("created_at")
 
-    ddi_warnings = find_ddi_warnings(list(active_medicines))
+    ddi_warnings = find_ddi_warnings(list(medicines))
     warning_medicine_ids = set()
 
     for warning in ddi_warnings:
         warning_medicine_ids.add(warning["medicine_1"].pk)
         warning_medicine_ids.add(warning["medicine_2"].pk)
 
-    grouped = {}
+    today = timezone.localdate()
+
+    intake_logs = IntakeLog.objects.filter(
+        user=request.user,
+        intake_date=today,
+    )
+
+    log_map = {
+        (log.medicine_id, log.intake_time): log.status
+        for log in intake_logs
+    }
+
+    groups = {}
 
     def format_time(time_text):
-        """09:00 -> 오전 9:00 형식으로 변환"""
         try:
             hour, minute = time_text.split(":")
             hour = int(hour)
+
             period = "오전" if hour < 12 else "오후"
             display_hour = hour if hour <= 12 else hour - 12
+
             if display_hour == 0:
                 display_hour = 12
+
             return f"{period} {display_hour}:{minute}"
         except Exception:
             return time_text
 
-    for medicine in active_medicines:
-        intake_times = [t.strip() for t in medicine.intake_time.split(",") if t.strip()]
+    for medicine in medicines:
+        times = [
+            t.strip()
+            for t in medicine.intake_time.split(",")
+            if t.strip()
+        ]
 
-        for intake_time in intake_times:
-            if intake_time not in grouped:
-                grouped[intake_time] = {
-                    "time": format_time(intake_time),
-                    "timing": "식후", # 임시..
+        for time in times:
+            timing = "식후" if medicine.meal_timing == "after" else "식전"
+            key = (time, timing)
+
+            if key not in groups:
+                groups[key] = {
+                    "time": format_time(time),
+                    "raw_time": time,
+                    "timing": timing,
                     "medicines": [],
                 }
 
@@ -175,26 +225,26 @@ def medication_reminder_view(request):
             else:
                 progress = 0
 
-            grouped[intake_time]["medicines"].append({
+            groups[key]["medicines"].append({
                 "pk": medicine.pk,
                 "name": medicine.medicine_name,
                 "image_static_path": medicine.image_static_path,
                 "progress": progress,
                 "is_warning": medicine.pk in warning_medicine_ids,
+                "intake_status": log_map.get((medicine.pk, time)),
             })
 
     medication_groups = [
-        grouped[key] for key in sorted(grouped.keys())
+        groups[key]
+        for key in sorted(groups.keys())
     ]
 
-    context = {
+    return render(request, "medicines/medication_reminder.html", {
         "user": request.user,
-        "nav_active": "reminder",
         "medication_groups": medication_groups,
         "has_medication_groups": bool(medication_groups),
-    }
-
-    return render(request, "medicines/medication_reminder.html", context)
+        "nav_active": "reminder",
+    })
 
 def prescription_upload(request):
     if request.method == "POST":
@@ -691,54 +741,6 @@ def medicine_edit_view(request, pk):
     })
 
 @login_required
-def medication_reminder_view(request):
-    medicines = UserMedicine.objects.filter(
-        user=request.user,
-        is_active=True,
-        alarm_enabled=True,
-    ).order_by("created_at")
-
-    groups = {}
-
-    for medicine in medicines:
-        times = [
-            t.strip()
-            for t in medicine.intake_time.split(",")
-            if t.strip()
-        ]
-
-        for time in times:
-            timing = "식후" if medicine.meal_timing == "after" else "식전"
-
-            key = (time, timing)
-
-            if key not in groups:
-                groups[key] = {
-                    "time": time,
-                    "timing": timing,
-                    "medicines": [],
-                }
-
-            groups[key]["medicines"].append({
-                "pk": medicine.pk,
-                "name": medicine.medicine_name,
-                "image_static_path": medicine.image_static_path,
-                "progress": medicine.remaining_ratio * 100,
-                "is_warning": False,
-            })
-
-    medication_groups = sorted(
-        groups.values(),
-        key=lambda group: group["time"]
-    )
-
-    return render(request, "medicines/medication_reminder.html", {
-        "medication_groups": medication_groups,
-        "has_medication_groups": bool(medication_groups),
-        "nav_active": "reminder",
-    })
-
-@login_required
 def due_medicine_alarm_api(request):
     now = timezone.localtime()
     now_minutes = now.hour * 60 + now.minute
@@ -781,3 +783,39 @@ def medicine_delete_view(request, pk):
         return redirect("medicine_list")
 
     return redirect("medicine_edit", pk=pk)
+
+@login_required
+@require_POST
+def update_intake_log_api(request):
+    data = json.loads(request.body)
+
+    medicine_id = data.get("medicine_id")
+    intake_time = data.get("intake_time")
+    status = data.get("status")
+
+    if status not in ["taken", "skipped"]:
+        return JsonResponse({"success": False}, status=400)
+
+    medicine = get_object_or_404(
+        UserMedicine,
+        pk=medicine_id,
+        user=request.user,
+        is_active=True,
+    )
+
+    today = timezone.localdate()
+
+    log, created = IntakeLog.objects.update_or_create(
+        user=request.user,
+        medicine=medicine,
+        intake_date=today,
+        intake_time=intake_time,
+        defaults={"status": status},
+    )
+
+    return JsonResponse({
+        "success": True,
+        "status": log.status,
+        "medicine_id": medicine.pk,
+        "intake_time": intake_time,
+    })

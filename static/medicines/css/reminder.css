@@ -621,3 +621,14 @@ body.medication-reminder-page {
     font-size: 15px;
     text-align: center;
   }
+
+  .reminder-dose-btn.medicine-complete-btn {
+    position: relative;
+    z-index: 5;
+    cursor: pointer;
+    pointer-events: auto;
+  }
+
+  .reminder-card-arrow {
+    z-index: 2;
+  }

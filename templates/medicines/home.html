@@ -37,7 +37,11 @@
     <div class="today-card-item">
       <p class="today-time">오전 09:00 | 식후</p>
 
-      <article class="today-medicine-card">
+      <article
+        class="today-medicine-card"
+        data-medicine-id="{{ item.medicine.pk }}"
+        data-intake-time="{{ item.current_intake_time }}"
+      >
         <div class="today-medicine-info">
           <div class="today-thumb"></div>
 
@@ -47,8 +51,16 @@
           </div>
         </div>
 
-        <button type="button" class="today-check-btn medicine-complete-btn">
-          <img src="{% static 'medicines/img/before.png' %}" alt="복용 전" class="medicine-state-image" />
+        <button
+          type="button"
+          class="today-check-btn medicine-complete-btn{% if item.intake_status == 'taken' %} completed{% endif %}"
+          data-dose-status="taken"
+        >
+          <img
+            src="{% if item.intake_status == 'taken' %}{% static 'medicines/img/after.png' %}{% else %}{% static 'medicines/img/before.png' %}{% endif %}"
+            alt="{% if item.intake_status == 'taken' %}복용 완료{% else %}복용 전{% endif %}"
+            class="medicine-state-image"
+          />
         </button>
       </article>
     </div>
@@ -148,6 +160,47 @@
         allTakenBtn.classList.remove("active");
       }
     }
+  });
+</script>
+
+<script>
+  function getCsrfToken() {
+    return document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("csrftoken="))
+      ?.split("=")[1];
+  }
+
+  document.addEventListener("click", async function (event) {
+    const button = event.target.closest(".today-check-btn");
+    if (!button) return;
+
+    const card = button.closest(".today-medicine-card");
+    if (!card) return;
+
+    const medicineId = card.dataset.medicineId;
+    const intakeTime = card.dataset.intakeTime;
+    const status = button.dataset.doseStatus;
+
+    const response = await fetch("{% url 'update_intake_log_api' %}", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCsrfToken(),
+      },
+      body: JSON.stringify({
+        medicine_id: medicineId,
+        intake_time: intakeTime,
+        status: status,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (!data.success) return;
+
+    button.classList.add("is-selected");
+    button.querySelector("span:last-child").textContent = "복용 완료";
   });
 </script>
 {% endblock %}

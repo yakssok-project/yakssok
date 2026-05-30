@@ -360,3 +360,46 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+
+function getCsrfToken() {
+  return document.cookie
+    .split("; ")
+    .find(row => row.startsWith("csrftoken="))
+    ?.split("=")[1];
+}
+
+document.addEventListener("click", async function (event) {
+  const button = event.target.closest(".reminder-dose-btn");
+  if (!button) return;
+
+  const card = button.closest(".reminder-medicine-card");
+  if (!card) return;
+
+  const medicineId = card.dataset.medicineId;
+  const intakeTime = card.dataset.intakeTime;
+  const status = button.dataset.doseStatus;
+
+  const response = await fetch("/medicines/intake-log/update/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": getCsrfToken(),
+    },
+    body: JSON.stringify({
+      medicine_id: medicineId,
+      intake_time: intakeTime,
+      status: status,
+    }),
+  });
+
+  const data = await response.json();
+
+  if (data.success) {
+    card.querySelectorAll(".reminder-dose-btn").forEach(btn => {
+      btn.classList.remove("is-selected");
+    });
+
+    button.classList.add("is-selected");
+  }
+});
