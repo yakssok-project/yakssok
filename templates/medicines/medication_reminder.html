@@ -163,7 +163,7 @@
                   <div class="reminder-action-row">
                     <button
                       type="button"
-                      class="reminder-dose-btn medicine-complete-btn{% if medicine.intake_status == 'taken' %} completed{% endif %}"
+                      class="reminder-check-btn{% if medicine.intake_status == 'taken' %} completed{% endif %}"
                       data-dose-status="taken"
                     >
                       <img
@@ -171,7 +171,7 @@
                         alt="{% if medicine.intake_status == 'taken' %}복용 완료{% else %}복용 전{% endif %}"
                         class="medicine-state-image"
                       />
-                    </button> 
+                    </button>
                   </div>
                 </article>
               {% endfor %}
@@ -185,9 +185,9 @@
   </div>
 </section>
 
-{% include 'medicines/medicine_alarm.html' %}
+<!--{% include 'medicines/medicine_alarm.html' %} -->
 {% endblock %}
 {% block extra_js %}
 <script src="{% static 'medicines/js/reminder.js' %}"></script>
-<script src="{% static 'medicines/js/reminder_alarm.js' %}"></script>
+<!-- <script src="{% static 'medicines/js/reminder_alarm.js' %}"></script> -->
 {% endblock %}

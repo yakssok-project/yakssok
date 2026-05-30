@@ -43,7 +43,7 @@
         data-intake-time="{{ item.current_intake_time }}"
       >
         <div class="today-medicine-info">
-          <div class="today-thumb"></div>
+          <div class0="today-thumb"></div>
 
           <div class="today-text">
             <span class="today-badge">처방약</span>
@@ -112,6 +112,27 @@
 
 {% block extra_js %}
 <script>
+  function getCsrfToken() {
+    return document.cookie
+      .split("; ")
+      .find((row) => row.startsWith("csrftoken="))
+      ?.split("=")[1];
+  }
+
+  function updateAllTakenButton() {
+    const buttons = document.querySelectorAll(".medicine-complete-btn");
+    const allTakenBtn = document.querySelector(".all-taken-btn");
+
+    if (!allTakenBtn) return;
+
+    const total = buttons.length;
+    const completed = document.querySelectorAll(
+      ".medicine-complete-btn.completed"
+    ).length;
+
+    allTakenBtn.classList.toggle("active", total > 0 && total === completed);
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     const bannerScroll = document.querySelector(".banner-scroll");
     const dots = document.querySelectorAll(".banner-dots span");
@@ -128,48 +149,8 @@
       });
     }
 
-    const medicineButtons = document.querySelectorAll(".medicine-complete-btn");
-    const allTakenBtn = document.querySelector(".all-taken-btn");
-
-    medicineButtons.forEach(function (button) {
-      button.addEventListener("click", function () {
-        const image = button.querySelector(".medicine-state-image");
-        const isCompleted = button.classList.contains("completed");
-
-        if (isCompleted) {
-          button.classList.remove("completed");
-          image.src = "{% static 'medicines/img/before.png' %}";
-        } else {
-          button.classList.add("completed");
-          image.src = "{% static 'medicines/img/after.png' %}";
-        }
-
-        checkAllCompleted();
-      });
-    });
-
-    function checkAllCompleted() {
-      const total = medicineButtons.length;
-      const completed = document.querySelectorAll(
-        ".medicine-complete-btn.completed"
-      ).length;
-
-      if (total > 0 && total === completed) {
-        allTakenBtn.classList.add("active");
-      } else {
-        allTakenBtn.classList.remove("active");
-      }
-    }
+    updateAllTakenButton();
   });
-</script>
-
-<script>
-  function getCsrfToken() {
-    return document.cookie
-      .split("; ")
-      .find((row) => row.startsWith("csrftoken="))
-      ?.split("=")[1];
-  }
 
   document.addEventListener("click", async function (event) {
     const button = event.target.closest(".today-check-btn");
@@ -180,7 +161,9 @@
 
     const medicineId = card.dataset.medicineId;
     const intakeTime = card.dataset.intakeTime;
-    const status = button.dataset.doseStatus;
+
+    const isCompleted = button.classList.contains("completed");
+    const status = isCompleted ? "none" : "taken";
 
     const response = await fetch("{% url 'update_intake_log_api' %}", {
       method: "POST",
@@ -196,11 +179,21 @@
     });
 
     const data = await response.json();
-
     if (!data.success) return;
 
-    button.classList.add("is-selected");
-    button.querySelector("span:last-child").textContent = "복용 완료";
+    const image = button.querySelector(".medicine-state-image");
+
+    if (data.status === "taken") {
+      button.classList.add("completed");
+      image.src = "{% static 'medicines/img/after.png' %}";
+      image.alt = "복용 완료";
+    } else {
+      button.classList.remove("completed");
+      image.src = "{% static 'medicines/img/before.png' %}";
+      image.alt = "복용 전";
+    }
+
+    updateAllTakenButton();
   });
 </script>
 {% endblock %}

@@ -793,9 +793,6 @@ def update_intake_log_api(request):
     intake_time = data.get("intake_time")
     status = data.get("status")
 
-    if status not in ["taken", "skipped"]:
-        return JsonResponse({"success": False}, status=400)
-
     medicine = get_object_or_404(
         UserMedicine,
         pk=medicine_id,
@@ -804,6 +801,24 @@ def update_intake_log_api(request):
     )
 
     today = timezone.localdate()
+
+    if status == "none":
+        IntakeLog.objects.filter(
+            user=request.user,
+            medicine=medicine,
+            intake_date=today,
+            intake_time=intake_time,
+        ).delete()
+
+        return JsonResponse({
+            "success": True,
+            "status": None,
+            "medicine_id": medicine.pk,
+            "intake_time": intake_time,
+        })
+
+    if status not in ["taken", "skipped"]:
+        return JsonResponse({"success": False}, status=400)
 
     log, created = IntakeLog.objects.update_or_create(
         user=request.user,

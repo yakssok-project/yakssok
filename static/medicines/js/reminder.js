@@ -81,11 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (i === 0) button.classList.add("is-sunday");
       if (i === 6) button.classList.add("is-saturday");
-
-      if (isSameDate(current, todayDate)) {
-        button.classList.add("is-today");
-      }
-
+      if (isSameDate(current, todayDate)) button.classList.add("is-today");
       if (selectedDate && isSameDate(current, selectedDate)) {
         button.classList.add("is-selected");
       }
@@ -124,9 +120,10 @@ document.addEventListener("DOMContentLoaded", function () {
   async function saveIntakeLog(card, button) {
     const medicineId = card.dataset.medicineId;
     const intakeTime = card.dataset.intakeTime;
-    const status = button.dataset.doseStatus;
+    const isCompleted = button.classList.contains("completed");
+    const status = isCompleted ? "none" : "taken";
 
-    if (!medicineId || !intakeTime || !status) {
+    if (!medicineId || !intakeTime) {
       console.error("복용 기록 저장에 필요한 데이터가 없습니다.", {
         medicineId,
         intakeTime,
@@ -136,6 +133,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     try {
+      button.disabled = true;
+
       const response = await fetch("/medicines/intake-log/update/", {
         method: "POST",
         headers: {
@@ -156,32 +155,32 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
       }
 
-      card.querySelectorAll(".reminder-dose-btn").forEach(function (btn) {
-        btn.classList.remove("is-selected", "is-taken", "is-skipped");
-      });
-
-      button.classList.add("completed");
-
       const image = button.querySelector(".medicine-state-image");
-      if (image) {
-        image.src = "/static/medicines/img/after.png";
-        image.alt = "복용 완료";
-      }
 
-      if (status === "taken") {
-        button.classList.add("is-taken");
-      }
+      if (data.status === "taken") {
+        button.classList.add("completed");
 
-      if (status === "skipped") {
-        button.classList.add("is-skipped");
+        if (image) {
+          image.src = "/static/medicines/img/after.png";
+          image.alt = "복용 완료";
+        }
+      } else {
+        button.classList.remove("completed");
+
+        if (image) {
+          image.src = "/static/medicines/img/before.png";
+          image.alt = "복용 전";
+        }
       }
     } catch (error) {
       console.error("복용 기록 저장 실패:", error);
+    } finally {
+      button.disabled = false;
     }
   }
 
   document.addEventListener("click", function (event) {
-    const button = event.target.closest(".reminder-dose-btn");
+    const button = event.target.closest(".reminder-check-btn");
     if (!button) return;
 
     const card = button.closest(".reminder-medicine-card");
