@@ -53,6 +53,24 @@ def short_medicine_name(name):
 
 @login_required
 def home_view(request):
+    def format_time(time_text):
+        if not time_text:
+            return ""
+
+        try:
+            hour, minute = time_text.split(":")
+            hour = int(hour)
+
+            period = "오전" if hour < 12 else "오후"
+            display_hour = hour if hour <= 12 else hour - 12
+
+            if display_hour == 0:
+                display_hour = 12
+
+            return f"{period} {display_hour}:{minute}"
+        except Exception:
+            return time_text
+
     active_medicines = _active_medicines(request.user)
     medicine_items = sort_medicines_by_next_intake(active_medicines)
 
@@ -71,9 +89,19 @@ def home_view(request):
     for item in medicine_items:
         medicine = item["medicine"]
 
-        first_time = medicine.intake_time.split(",")[0].strip()
+        first_time = ""
+        if medicine.intake_time:
+            first_time = medicine.intake_time.split(",")[0].strip()
+
+        meal_timing = ""
+        if medicine.meal_timing == "before":
+            meal_timing = "식전"
+        elif medicine.meal_timing == "after":
+            meal_timing = "식후"
 
         item["current_intake_time"] = first_time
+        item["display_time"] = format_time(first_time)
+        item["display_meal_timing"] = meal_timing
         item["intake_status"] = log_map.get((medicine.pk, first_time))
 
     medicine_count = len(medicine_items)

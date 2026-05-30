@@ -35,7 +35,11 @@
   <div class="today-card-scroll">
     {% for item in medicine_items %}
     <div class="today-card-item">
-      <p class="today-time">오전 09:00 | 식후</p>
+      <p class="today-time">
+        {% if item.display_time or item.display_meal_timing %}
+          {{ item.display_time }}{% if item.display_time and item.display_meal_timing %} | {% endif %}{{ item.display_meal_timing }}
+        {% endif %}
+      </p>
 
       <article
         class="today-medicine-card"

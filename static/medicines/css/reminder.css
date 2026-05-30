@@ -412,14 +412,18 @@ body.medication-reminder-page {
   }
   
   .medication-reminder-page .reminder-card-list {
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-    margin-left: 15px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding-bottom: 6px;
-    scroll-snap-type: x mandatory;
+      display: flex;
+      flex-direction: row;
+
+      gap: 12px;
+
+      overflow-x: auto;
+      overflow-y: hidden;
+
+      padding: 4px 8px 8px 15px;
+
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
   }
 
   .medication-reminder-page .reminder-card-list::-webkit-scrollbar {
@@ -432,13 +436,20 @@ body.medication-reminder-page {
   
   .medication-reminder-page .reminder-medicine-card {
     position: relative;
-    width: 342px;
+
+    flex: 0 0 260px;
+    min-width: 260px;
+    max-width: 260px;
+
     height: 175px;
+
     border-radius: 10px;
     border: 0.4px solid #CCCCCC;
     background: #FFFFFF;
     box-shadow: 2px 2px 4px 0 rgba(204, 204, 204, 0.15);
     box-sizing: border-box;
+
+    scroll-snap-align: start;
   }
   
   .medication-reminder-page .reminder-medicine-card.is-warning {
@@ -504,26 +515,16 @@ body.medication-reminder-page {
   }
   
   .medication-reminder-page .reminder-medicine-name {
-    margin: 8px 0 0;
-    color: #444444;
-    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    font-size: 20px;
+    margin: 6px 0 0;
+    font-size: 15px;
     font-weight: 500;
-    line-height: normal;
-    letter-spacing: -1px;
-  
+    letter-spacing: -0.5px;
+    line-height: 1.25;
+
+    white-space: normal;
     overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-  
-  .medication-reminder-page .reminder-progress {
-    width: 216px;
-    height: 6px;
-    margin-top: 6px;
-    border-radius: 999px;
-    background: #F4F4F4;
-    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
   }
   
   .medication-reminder-page .reminder-progress-fill {
